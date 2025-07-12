@@ -488,6 +488,30 @@ string.bold = function()
     return "<b>" + self + "</b>"
 end function  
 
+        //  **Description:**
+        //  Generate a random number from 0 to number, or from optional minimum to number
+        //  @param {number} [min]
+        //  @return {number} - The result of the subtraction.
+        //  @example myNumber = 100;
+        //  @example 
+        //  @example result = myNumber.random_from(50);
+        //  @example
+        //  print(result); // Output: A random number between 50 and 100
+    number.random_from = function(min = 0)
+            locals.max = self
+            return floor((rnd * (locals.max - locals.min + 1)) + locals.min)  
+    end function
+    //@name random_from
+        //  * @startuml
+        //  * entity NumberObject
+        //  * control ".random_from" as random_from
+        //  *   NumberObject -> random_from : number
+        //  *   random_from -> NumberObject : [random number in range]     
+        //  * footer
+        //  *   number.random_from([opt:min])
+        //  * endfooter         
+        //  * @enduml         
+
 import_code("/lib/bootstrap.so")
 
 //TODO: Add Gate Here
@@ -510,16 +534,31 @@ wifiFileLocation = home_dir + "/Database/wifiPasswordList"
 
 clear_screen
 keepAlive = true
+bounceWifi = false
 output = []
 selectedNetwork = 0 //default to first one found
 selectedWifiSignal = 0
 selectedNetworkDevice = null
 networkDeviceList = network_device_list
 myComputer = get_shell.host_computer
-
+rndWait = 0
 
 
 while keepAlive == true
+
+    if bounceWifi == true then
+        randomWifiSelection = (wifiFileContent.len - 1).random_from
+        selectedWifiSignal = randomWifiSelection
+        wifiInfo = wifiFileContent[randomWifiSelection - 1].split(" ")
+        essid = wifiInfo[1].trim
+        bssid = wifiInfo[0].trim
+        wifiPassword = wifiInfo[2].trim
+        myComputer.connect_wifi(selectedNetworkDevice, bssid, essid, wifiPassword)
+        waitTime = 60
+        rndWait = waitTime.random_from
+        //print "Connecting to " + essid + " for " + rndWait + " seconds..."
+    end if
+
 wifiFile = myComputer.File(wifiFileLocation)
 if typeof(wifiFile) == "file" then
     wifiFileContent = ((wifiFile.get_content).remove_char_last).split(char(10))
@@ -539,7 +578,7 @@ end if
 	end if
 	if not selectedNetworkDevice == null then
 		//output.push(str(networkDeviceList[selectedNetwork]).underline)
-        output.push("Selecte Network to Crack".underline)
+        output.push("Selecte Network to Crack [F1]-Bounce Connection".underline)
 		for wifiNetwork in wifiNetworkList
             for connection in wifiFileContent
                 knownBSSID = connection.split(" ")[0]
@@ -559,12 +598,24 @@ end if
 		end for
 	end if
 
-	for line in output
-		print line
-	end for
 
-	userInput = user_input("", false, true)
-	wait(0.3); clear_screen
+    if rndWait == 0 then
+		for line in output
+			print line
+		end for
+    	userInput = user_input("", false, true)
+    else
+		for i in range(rndWait, 0, -1)
+			print ("Bouncing Connecting in " + i).bold.underline
+			for line in output
+				print line
+			end for			
+			wait
+			clear_screen
+		end for
+    end if
+	
+    wait(0.3); clear_screen
 	output = []
 	if selectedNetworkDevice == null then
 		if userInput == "UpArrow" then
@@ -605,7 +656,13 @@ end if
                 clear_screen
                 Crypto.airmon("stop", selectedNetworkDevice)
                 file_append(home_dir + "/Database", "wifiPasswordList", bssid + " " + essid + " " + wifiPassword + " " + wifiInfo[1] + char(10))
-		end if		
+        end if
+        if userInput == "F1" then
+            if bounceWifi == false then
+                bounceWifi = true
+            else
+                bounceWifi = false
+            end if
+        end if
 	end if
 end while
-
