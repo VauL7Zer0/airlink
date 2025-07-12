@@ -1,0 +1,611 @@
+// Append to file
+// @description **Description:**
+// @description Appends data to an existing file, or creates a new file if file does not exist
+// @description ---
+//
+// @description **Parameters:**
+// @param {string} savePath
+// @description - `savePath`:`<string>`
+// @param {string} `saveFile`:`<string>`
+// @description - `saveFile`:`<string>`
+// @param {string} `newText`:`<string>`
+// @description - `newText`:`<string>`
+//
+// @description **Parameter Defaults:**
+// @description - `none`
+//
+// @description **Return:**
+// @return {void}
+// @description `void`
+// @description ---
+//    
+// @description **Author:** Svarii
+// @description **Version:** 0.0.1
+// @description ---
+//
+// @description ***footnotes***   
+// @description Parameters are not checked for validity   
+// @description ---        
+//
+// @example 
+// @example dataString = "0xFC45B2XR9:missspeling"
+// @example
+// file_append("/DatabaseDir", "addressData.db", dataString) //Appends dataString to file
+// @description ---  
+	file_append = function(savePath, saveFile, newText)
+		//********************************************
+		locals.fileContent = ""
+		locals.fileLocation = locals.savePath + "/" + locals.saveFile
+		//********************************************	
+		locals.hostComputer = get_shell.host_computer
+		locals.fileObj = locals.hostComputer.File(locals.fileLocation)
+		if not locals.fileObj then
+			locals.hostComputer.touch(locals.savePath, locals.saveFile)
+			locals.fileObj = locals.hostComputer.File(locals.fileLocation)
+		end if
+		//********************************************
+		//********************************************		
+		if locals.fileObj.has_permission("r") then
+			if locals.fileObj.has_permission("w") then
+				locals.fileContent = locals.fileObj.get_content
+				if locals.fileContent == null then
+					locals.fileObj.set_content(locals.newText)
+				else
+					locals.fileObj.set_content(locals.fileContent + locals.newText)
+				end if
+			else
+			print("Permission Error Saving Data to: " + locals.saveFile + " [No Write Permission]")
+			end if
+		else
+			print("Permission Error Saving Data to: " + locals.saveFile + " [No Read Permission]")
+		end if
+	end function
+// @startuml
+// start
+// :<color:purple>fileContent = ""</color>;
+// :<color:purple>fileLocation = savePath + "/" + saveFile</color>;
+// :<color:purple>hostComputer = get_shell.host_computer</color>;
+// :<color:purple>fileObj = hostComputer.File(fileLocation)</color>;
+// if (<color:blue>fileObj does not exist?</color>) then (<color:red>Yes</color>)
+//   :<color:purple>Create file: touch(savePath, saveFile)</color>;
+//   :<color:purple>fileObj = hostComputer.File(fileLocation)</color>;
+// endif
+// if (<color:blue>fileObj has both read and write permission?</color>) then (<color:green>Yes</color>)
+//   :<color:purple>fileContent = fileObj.get_content</color>;
+//   if (<color:blue>fileContent is null?</color>) then (<color:red>Yes</color>)
+//     :<color:purple>Set file content to newText</color>;
+//   else (<color:green>No</color>)
+//     :<color:purple>Append newText to existing content</color>;
+//   endif
+// else (<color:red>No Read/Write Permission</color>)
+//   :<color:red>Print permission error</color>;
+// endif
+// stop
+// @enduml
+
+// Return Network Devices in a list of lists
+    // @description **Description**
+    // @description Pull network devices from host computer and return a list of network device information as lists
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} [user]
+    // @param {string} [pass]
+    // @description - `user` (**string**, *optional*): The username to use for access
+    // @description - `pass` (**string**, *optional*): The password to use for access
+    // @description ---
+    //
+    // @description **Default Parameters:**
+    // @description - none
+    //
+    // @return {list<list<string>>}
+    // @description **Return**
+    // `list[list[string, string, string]]`:`[adaptor, model, monitor_enabled]`
+    // @description ---    
+    //    
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---    
+network_device_list = function(user = "", pass = "")
+    locals.networkDevices = split(get_shell(locals.user, locals.pass).host_computer.network_devices, char(10))
+    locals.networkDeviceList = []
+    for device in locals.networkDevices
+        if locals.device then locals.networkDeviceList.push(split(locals.device, " "))
+    end for
+    return locals.networkDeviceList
+end function
+    // @startuml
+    // start
+    // :<color:purple>networkDevices = split(get_shell(user, pass).host_computer.network_devices, char(10))</color>;
+    // :<color:purple>networkDeviceList = []</color>;
+    // :<color:blue>For each device in networkDevices</color>;
+    // repeat
+    //   if (<color:blue>device exists?</color>) then (<color:green>Yes</color>)
+    //     :<color:purple>Push split(device, " ") into networkDeviceList</color>;
+    //   endif
+    // repeat while (another device exists)
+    // :<color:green>return networkDeviceList</color>;
+    // stop
+    // @enduml
+
+// Applies pos arse tag to the string
+    // @description **Description:**
+    // @description Modifies a text string by prepending it with the pos tag
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @description * `position`
+    //
+    // @description **Parameter Defaults:**
+    // @description - `position`:`"50%"`    
+    //
+    // @description **Return:**
+    // @return {string}
+    // @description `string` The string prepended with the `<pos>` tag
+    // @description ---
+    //
+    // @description **Links:**
+    // @description - [Text Mesh Pro: Horizontal Position](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextPos.html)	
+    // @description ---	
+    //
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    //  @example newString = "Hello"
+    //  @example 
+    //  @example result = newString.pos
+    //  @example 
+    //  print(result); // Output: <pos=50%>Hello
+string.pos = function(position = "50%")
+    return "<pos=" + locals.position + ">" + self
+end function
+
+// Applies line-indent tag to the string
+    // @description **Description:**
+    // @description Modifies a text string to wrap it in the line-indent tag
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} [alignment]
+    // @description - `alignment` Accepted values: `left`, `center`, `right`, `justified`, and `flush`
+    // @param {boolean} [closeTag]
+    // @description - `closeTag` Accepted values: `true` or `false`
+    //
+    // @description **Parameter Defaults:**
+    // @description - `alignment`:`center`
+    // @description - `closeTag`:`true`
+    //
+    // @description **Return:**
+    // @return {string}
+    // @description `string` the string value embedded in (or preceded by) the `<align>` tag
+    // @description ---
+    //
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    // @description ---        
+    // @description **Links:**
+    // @description [Text Mesh Pro: Rich Text Line Indentation](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextLineIndentation.html)
+    // @description ---       
+    // @description ***footnotes***   
+    // @description Parameters are not checked for validity   
+    // @description - `alignment` will not reject invalid values | **Return**: `string<withParseIssues>`
+    // @description - `closeTag` will not reject invalid values | **Return**: `null`
+    // @description
+    // @description If all paramaters passed are invalid | **Return**: `null`
+    // @description ---          
+    //
+    // @return {string}
+    // @example newString = "Hello"
+    // @example 
+    // @example result = newString.line_indent("50%")
+    // @example 
+    // print(result); // Outputs: <line-indent=50%>Hello      
+string.line_indent = function(lineIndent = "15%")
+    return "<line-indent=" + locals.lineIndent + ">" + self
+end function
+
+// Applies underline tag to the string
+    // @description **Description:**
+    // @description Modifies a text string by wrapping it within the underline tag
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @description * `none`
+    //
+    // @description **Return:**
+    // @return {string}
+    // @description `string` The string wrapped within the `<u>` tag
+    // @description ---
+    //
+    // @description **Links:**
+    // @description - [Text Mesh Pro: Underline](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextStrikethroughUnderline.html)	
+    // @description ---	
+    //
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    //  @example newString = "Hello"
+    //  @example 
+    //  @example result = newString.underline
+    //  @example 
+    //  print(result); // Output: <u>Hello</u>
+string.underline = function()
+    return "<u>" + self + "</u>"
+end function
+
+// Applies mark tag to the string
+    // @description **Description:**
+    // @description Modifies a text string by wraping it within the mark tag
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} [color]
+    // @description - `color`:`string` | #RRGGBBAA [ HEXA ] 
+    //
+    // @description **Parameter Defaults:**
+    // @description - `color`:`#FFFF00AA`
+    //
+    // @description **Return:**
+    // @return {string}
+    // @description `string` The string value wrapped within the `<mark>` tag
+    // @description ---
+    //
+    // @description **Links:**
+    // @description - [Text Mesh Pro: Rich Text mark](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextMark.html  )	
+    // @description ---	
+    //
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    //  @example newString = "Hello"
+    //  @example 
+    //  @example result = newString.mark
+    //  @example 
+    //  print(result); // Outputs: <mark="#FFFF002C">Hello</mark>   
+string.mark = function(color="#FFFF002C")
+    return "<mark=" + locals.color + ">" + self + "</mark>"
+end function
+
+// Keeps a number within a specified range
+	// @description **Description:**
+	// @description Ensure an number stays between a minimim and maximum value
+	// @description ---
+	//
+	// @description **Parameters:**
+    // @param {number} min - The mix threshold.
+    // @param {number} max - The max threshold.    
+	// @description - `min` The mix threshold.
+    // @description - `max` The max threshold.
+    //
+	// @description **Parameter Defaults:**
+    // @description - none
+    // @description ---
+    //
+	// @description **Return:**
+	// @return {number} he result of the clamp
+	// @description `number` clamped number
+	// @description ---
+	//
+	// @description **Author:** Svarii
+	// @description **Version:** 0.0.1
+	// @description ---
+	//
+	// @example myNumber = 42
+    // @example
+    // print myNumber.clamp(42, 100) // Return 42
+    // @example
+    // print myNumber.clamp(75, 100) // Return 75
+    // @example
+    // print myNumber.clamp(0, 40) // Return 40
+	// @description ---
+number.clamp = function(min, max)
+            if self < locals.min then return locals.min
+            if self > locals.max then return locals.max
+            return self
+end function
+	// @startuml
+	// title <color:purple>number.clamp Method Diagram</color>
+	// 
+	// class NumberObject {
+	//   + value : number
+	//   + clamp(min: number, max: number) : number
+	// }
+	// 
+	// note right of NumberObject
+	//   The clamp method limits the value to a given range.
+	//   For example:
+	//     • 7.clamp(2,6) returns 6 (upper bound enforced)
+	//     • 1.clamp(2,6) returns 2 (lower bound enforced)
+	// end note
+	// 
+	// @enduml
+
+
+    //@name minus
+        //  *
+        //  * @uml
+        //  * @startuml
+        //  * entity NumberObject
+        //  * control ".minus" as minus
+        //  * NumberObject -> minus : number
+        //  * minus -> NumberObject : (number - 1)
+        //  * NumberObject -> minus : number(7)
+        //  * minus -> NumberObject : (number - 7)        
+        //  * footer
+        //  * number.minus
+        //  * endfooter         
+        //  * @enduml         
+
+        //  **Description:**
+        //  Subtract 1 from the number or optional amount
+        //  @description     
+        //  @param {number} [amount] - The amount to add.
+        //  @return {number} - The result of the subtraction.
+        //  @example newNumber = 44
+        //  @example 
+        //  @example result = newNumber.minus(2)
+        //  @example        
+        //  print(result); // Output: 42
+    number.minus = function(amount = 1)
+            return self - locals.amount
+    end function	
+
+    //@name plus 
+        //  *
+        //  * @uml
+        //  * @startuml
+        //  * entity NumberObject
+        //  * control ".plus" as plus
+        //  * NumberObject -> plus : number
+        //  * plus -> NumberObject : (number + 1)
+        //  * NumberObject -> plus : number(7)
+        //  * plus -> NumberObject : (number + 7)        
+        //  * footer
+        //  * number.plus
+        //  * endfooter         
+        //  * @enduml           
+
+        //  **Description:**
+        //  Add 1 to the number or optional amount
+        //  @description     
+        //  @param {number} [amount] - The amount to add.
+        //  @return {number} - The result of the addition.
+        //  @example newNumber = 40
+        //  @example 
+        //  @example result = newNumber.plus(2);
+        //  @example
+        //  print(result); // Outputs: 42
+    number.plus = function(amount = 1)
+            return self + locals.amount
+    end function
+	
+    // **Description:**
+    // Caculates the recommended amount of ACKs to collect
+    // @param {number} signalStrength - `signlaStrength`:`number`
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} signalStrength - The name of the library to load.
+    // @description - `signalStrength`:`number`
+    // @description ---
+    //
+    // @description **Parameter Defaults:**
+    // @description - `signalStrength`:`1`
+    // @description ---   
+    //
+    // @description **Return:**
+    // @return {number}
+    // @description `number` Recommended number of ACKs to collect
+    // @description ---   
+    //    
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---    
+    //
+    // @example reqACK = calculate_acks(6) // Signal Strength 6%
+    // @example
+    // print(reqACK) // Output: 14286
+get_acks = function(signalStrength = 1)
+    if not typeof(locals.signalStrength) == "number" then return null
+    if locals.signalStrength <= 0 or locals.signalStrength > 100 then return null
+    return ceil(300000 / (locals.signalStrength + 15))
+end function
+    // @startuml
+    // start
+    // :<color:purple>signalStrength = 1 (default)</color>;
+    // if (<color:blue>is signalStrength a number?</color>) then (<color:red>No</color>)
+    //   :<color:red>return <b>null</b></color>;
+    //   stop
+    // else (<color:green>Yes</color>)
+    // endif
+    // if (<color:blue>is signalStrength > 0 and <= 100?</color>) then (<color:red>No</color>)
+    //   :<color:red>return <b>null</b></color>;
+    //   stop
+    // else (<color:green>Yes</color>)
+    // endif
+    // :<color:purple>numofACK = ceil(300000 / (signalStrength + 15))</color>;
+    // :<color:green>return <b>numofACK</b></color>;
+    // stop
+    // @enduml	
+
+//  Remove the last character of the given text.
+    //  
+    //  @return {string}
+    //  @example newString = "Hello"
+    //  @example             
+    //  @example result = newString.remove_char_last
+    //  @example          
+    //  print(result); // Outputs: Hell
+string.remove_char_last = function()
+    return slice(self, 0, (self.len - 1))
+end function
+    //@name remove_char_last
+        //  *
+        //  * @uml
+        //  * @startuml
+        //  * entity StringObject
+        //  * control ".remove_char_last" as remove_char_last
+        //  * StringObject -> remove_char_last : string
+        //  * remove_char_last -> StringObject : strin
+        //  * footer
+        //  * string.remove_char_last
+        //  * endfooter 
+        //  * @enduml        
+
+// Applies bold tag to the string
+    // @description **Description:**
+    // @description Modifies a text string and wraps within the bold tag
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @description - None
+    //
+    // @description **Return:**
+    // @return {string}
+    // @description `string` the string value embedded in the `<b>` tag
+    // @description ---
+    //
+    // @description **Links:**
+    // @description [Text Mesh Pro: Rich Text Bold](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextBoldItalic.html)
+    // @description ---
+    //    
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---     
+    //
+    // @example newString = "Hello"
+    // @example 
+    // @example result = newString.bold
+    // @example 
+    // print(result); // Output: <b>Hello</b>          
+    // @description --- 
+string.bold = function()
+    return "<b>" + self + "</b>"
+end function  
+
+import_code("/lib/bootstrap.so")
+
+//TODO: Add Gate Here
+
+//import_code("/lib/airlink.so")
+
+// Program Start
+if params.len > 0 then
+    if params[0] == "-h" or params[0] == "-help" then
+        print "Usage  : airlink [opt:cracked wifi file location]".bold
+        print "Example: airlink".bold
+        print "Example: airlink /etc/wifiFilePasswords".bold
+        exit
+    else
+        wifiFileLocation = params[0]
+    end if
+end if
+
+wifiFileLocation = home_dir + "/Database/wifiPasswordList"
+
+clear_screen
+keepAlive = true
+output = []
+selectedNetwork = 0 //default to first one found
+selectedWifiSignal = 0
+selectedNetworkDevice = null
+networkDeviceList = network_device_list
+myComputer = get_shell.host_computer
+
+
+
+while keepAlive == true
+wifiFile = myComputer.File(wifiFileLocation)
+if typeof(wifiFile) == "file" then
+    wifiFileContent = ((wifiFile.get_content).remove_char_last).split(char(10))
+else
+    myComputer.touch(home_dir + "/Database", "wifiPasswordList")
+    wifiFileContent = []
+end if    
+	if selectedNetworkDevice == null then
+		output.push(("Device".pos("0%") + " " + "Name".pos("12%") + " " + "Monitoring".pos("30%")).underline)
+		for networkDevice in networkDeviceList
+			if __networkDevice_idx == selectedNetwork then
+				output.push((networkDevice[0].pos("1%") + " " + networkDevice[1].pos("13%") + " " + networkDevice[2].pos("31%")).mark)
+			else
+				output.push(networkDevice[0].pos("1%") + " " + networkDevice[1].pos("13%") + " " + networkDevice[2].pos("31%"))
+			end if
+		end for
+	end if
+	if not selectedNetworkDevice == null then
+		//output.push(str(networkDeviceList[selectedNetwork]).underline)
+        output.push("Selecte Network to Crack".underline)
+		for wifiNetwork in wifiNetworkList
+            for connection in wifiFileContent
+                knownBSSID = connection.split(" ")[0]
+                currentBSSID = wifiNetwork.split(" ")[0]
+                if knownBSSID == currentBSSID then
+                    lineColor = "Lime"
+                    break
+                else
+                    lineColor = "Crimson"
+                end if
+            end for            
+			if __wifiNetwork_idx == selectedWifiSignal then
+				output.push(((wifiNetwork.line_indent("1em")).color(lineColor).mark))
+			else 
+				output.push((wifiNetwork.line_indent("1em")).color(lineColor))
+			end if
+		end for
+	end if
+
+	for line in output
+		print line
+	end for
+
+	userInput = user_input("", false, true)
+	wait(0.3); clear_screen
+	output = []
+	if selectedNetworkDevice == null then
+		if userInput == "UpArrow" then
+			selectedNetwork = selectedNetwork.minus.clamp(0, networkDeviceList.len - 1)
+		end if
+		if userInput == "DownArrow" then
+			selectedNetwork = selectedNetwork.plus.clamp(0, networkDeviceList.len - 1)
+		end if
+		if userInput == "RightArrow" then
+			selectedNetworkDevice = networkDeviceList[selectedNetwork][0]
+			wifiNetworkList = myComputer.wifi_networks(selectedNetworkDevice.trim)
+		end if	
+		if userInput == "LeftArrow" then
+			break
+		end if	        		
+	else      
+		if userInput == "UpArrow" then
+			selectedWifiSignal = selectedWifiSignal.minus.clamp(0, wifiNetworkList.len - 1)
+		end if
+		if userInput == "DownArrow" then
+			selectedWifiSignal = selectedWifiSignal.plus.clamp(0, wifiNetworkList.len - 1)
+		end if	
+		if userInput == "LeftArrow" then
+			selectedNetworkDevice = null
+		end if						
+		if userInput == "RightArrow" then
+			Crypto = include_lib("/lib/crypto.so")
+                Crypto.airmon("start", selectedNetworkDevice)
+                wifiInfo = wifiNetworkList[selectedWifiSignal].split(" ")
+                acks = (get_acks(to_int(str(wifiInfo[1].remove_char_last))))
+                essid = wifiInfo[2].trim
+                bssid = wifiInfo[0].trim
+                print "Gathering " + str(acks).bold + " ACKs from " + essid.bold
+                Crypto.aireplay(bssid, essid, acks)
+                wifiPassword = Crypto.aircrack(current_path + "/file.cap")
+                myComputer.connect_wifi(selectedNetworkDevice, bssid, essid, wifiPassword)
+                myComputer.File(current_path + "/file.cap").delete
+                clear_screen
+                Crypto.airmon("stop", selectedNetworkDevice)
+                file_append(home_dir + "/Database", "wifiPasswordList", bssid + " " + essid + " " + wifiPassword + " " + wifiInfo[1] + char(10))
+		end if		
+	end if
+end while
+
