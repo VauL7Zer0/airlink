@@ -1033,6 +1033,7 @@ end if
             for connection in wifiFileContent
                 knownBSSID = connection.split(" ")[0]
                 currentBSSID = wifiNetwork.split(" ")[0]
+				lineColor = "Orange"
                 if knownBSSID == currentBSSID then
                     lineColor = "Lime"
                     break
