@@ -1027,13 +1027,13 @@ end if
 		end for
 	end if
 	if not selectedNetworkDevice == null then
+		lineColor = "Orange"
 		//output.push(str(networkDeviceList[selectedNetwork]).underline)
         output.push("Selecte Network to Crack [F1]-Bounce Connection".underline)
 		for wifiNetwork in wifiNetworkList
             for connection in wifiFileContent
                 knownBSSID = connection.split(" ")[0]
                 currentBSSID = wifiNetwork.split(" ")[0]
-				lineColor = "Orange"
                 if knownBSSID == currentBSSID then
                     lineColor = "Lime"
                     break
