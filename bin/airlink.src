@@ -1,0 +1,598 @@
+//Import Custom Library Code
+    import_code("/opt/airlink/lib/libAirlink.so")
+//Theme Settings
+    //Help Menu
+        helpMenuItemColor = "LightSkyBlue"
+        helpMenuKeyColor = "Yellow"
+    //General Text
+        defaultTextColor = "WhiteSmoke"
+// Check for help params
+    if params.len > 0 then
+        if params[0].indexOf("-h") == 0 then
+            paramInfo = []
+            paramInfo.push("Toggle Help".color(helpMenuItemColor) + "        [F1]".color(helpMenuKeyColor))
+            paramInfo.push("Cycle Adaptor".color(helpMenuItemColor) + "      [TAB]".color(helpMenuKeyColor))
+            paramInfo.push("Exit the Program".color(helpMenuItemColor) + "   [ESC]".color(helpMenuKeyColor))
+            paramInfo.push("Scroll Up".color(helpMenuItemColor) + "          [UpArrow]".color(helpMenuKeyColor))
+            paramInfo.push("Scroll Down".color(helpMenuItemColor) + "        [DownArrow".color(helpMenuKeyColor))
+            paramInfo.push(" ")
+            paramInfo.push("Crack / Connect".color(helpMenuItemColor) + "    [RightArrow]".color(helpMenuKeyColor))
+            paramInfo.push("Open Password File".color(helpMenuItemColor) + " [Insert]".color(helpMenuKeyColor))
+            paramInfo.push("Toggle Theme Menu".color(helpMenuItemColor) + "  [F2]".color(helpMenuKeyColor))
+            for info in paramInfo
+                print(info,true)
+            end for
+            paramInfo = []
+        end if
+        exit
+    end if
+// Declare Variables
+    outputBuffer = []
+	myShell = get_shell
+	myComputer = myShell.host_computer
+	lastIP = myComputer.public_ip
+	lastPassword = ""
+	lastNetwork = ""
+    userInput = ""
+	scrollOffset = 0
+    themeScrollOffset = 0
+	windowSize = 6
+    themeIndexSelection = 0
+    refreshTimer = time
+	showHelp = false
+    showThemeList = false
+    playerDatabaseDir = null
+    wifiDatabaseFilename = null
+    // Specify Wifi Information Database File Location
+        // Load config file data
+            airlinkConfigFile = myComputer.File("/opt/airlink/etc/airlink.conf")
+            if typeof(airlinkConfigFile) == "file" then
+                airlinkConfigContent = airlinkConfigFile.get_content
+            end if
+            if typeof(airlinkConfigContent) == "string" then
+                airlinkConfigList = airlinkConfigContent.split(char(10))
+            end if
+            for airlinkConfigItem in airlinkConfigList
+                airlinkConfigItemPart = airlinkConfigItem.split(":")
+                //playerDatabaseDir
+                if airlinkConfigItemPart[0] == "playerDatabaseDir" then
+                    playerDatabaseDir = home_dir + airlinkConfigItemPart[1]
+                //wifiDatabaseFileName
+                else if airlinkConfigItemPart[0] == "wifiDatabaseFileName" then
+                    wifiDatabaseFilename = airlinkConfigItemPart[1]
+                end if
+            end for
+		//Set Internal Default Theme
+			leftBorder = "0em"
+			rightBorder = "36em"
+			borderCharacter1 = "█".alpha("#2C")
+			borderCharacter2 = "░".alpha("#2C")	
+			borderCharacter3 = "▓".alpha("#2C")
+            borderCharacter1Color = "WhiteSmoke"
+            borderCharacter2Color = "WhiteSmoke"
+            borderCharacter3Color = "WhiteSmoke"
+			noBar = "     "
+			lowBar  = "▁    "
+			medBar  = "▂▃  "
+			highBar = "▃▄▅ "
+			maxBar  = "▄▅▇█"
+            passColor = "LimeGreen"
+            failColor = "Red"
+            poz = 2
+            poy = 8
+            pox = 22
+            tag1 = "○"
+            tag2 = "●"
+            tag1Color0 = "#00FF33"
+            tag2Color0 = "#FFB000"
+            tag2Color1 = "#00FF33"
+            tag2Color2 = "#00AA22"
+            signalColor0 = "Crimson"
+            signalColor1 = "FireBrick"
+            signalColor2 = "DarkRed"
+            signalColor3 = "OrangeRed"
+            signalColor4 = "DarkOrange"
+            signalColor5 = "Gold"
+            signalColor6 = "Khaki"
+            signalColor7 = "YellowGreen"
+            signalColor8 = "Chartreuse"
+            signalColor9 = "Green"
+            signalColor10 = "LimeGreen"
+            signalColor11 = "Lime"
+            ipAddressColor = "DeepPink"
+            textColor = "WhiteSmoke"
+            selectionHighlightColor = "#B0C4DE2C"
+            ackInfoColor = "Cyan"
+            alphaSetting = "#2C"
+        //Load Theme Data
+        load_theme = function(themefile = "default.ini")
+            airlinkThemeContent = null
+            airlinkThemeList = null
+            locals.airlinkThemeFile = globals.myComputer.File(home_dir + "/Airlink/Theme/" + locals.themefile)
+            if typeof(locals.airlinkThemeFile) == "file" then
+                locals.airlinkThemeContent = locals.airlinkThemeFile.get_content
+            end if
+            if typeof(locals.airlinkThemeContent) == "string" then
+                locals.airlinkThemeList = locals.airlinkThemeContent.split(char(10))
+            end if
+            for airlinkThemeItem in locals.airlinkThemeList
+                locals.airlinkThemeItemPart = locals.airlinkThemeItem.split(":")
+                //playerDatabaseDir
+                if locals.airlinkThemeItemPart[0] == "leftBorder" then
+                    globals.leftBorder = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "rightBorder" then
+                    globals.rightBorder = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "alphaSetting" then
+                    globals.alphaSetting = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter1" then
+                    globals.borderCharacter1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter2" then
+                    globals.borderCharacter2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter3" then
+                    globals.borderCharacter3 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "noBar" then
+                    globals.noBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "lowBar" then
+                    globals.lowBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "medBar" then
+                    globals.medBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "highBar" then
+                    globals.highBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "maxBar" then
+                    globals.maxBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "failColor" then
+                    globals.failColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "passColor" then
+                    globals.passColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "poz" then
+                    globals.poz = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "poy" then
+                    globals.poy = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "pox" then
+                    globals.pox = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag1" then
+                    globals.tag1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag2" then
+                    globals.tag2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag1Color0" then
+                    globals.tag1Color0 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag2Color0" then
+                    globals.tag2Color0 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag2Color1" then
+                    globals.tag2Color1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag2Color2" then
+                    globals.tag2Color2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor0" then
+                    globals.signalColor0 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor1" then
+                    globals.signalColor1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor2" then
+                    globals.signalColor2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor3" then
+                    globals.signalColor3 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor4" then
+                    globals.signalColor4 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor5" then
+                    globals.signalColor5 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor6" then
+                    globals.signalColor6 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor7" then
+                    globals.signalColor7 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor8" then
+                    globals.signalColor8 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor9" then
+                    globals.signalColor9 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor10" then
+                    globals.signalColor10 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor11" then
+                    globals.signalColor11 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "ipAddressColor" then
+                    globals.ipAddressColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "defaultTextColor" then
+                    globals.defaultTextColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "selectionHighlighColor" then
+                    globals.selectionHighlightColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter1Color" then
+                    globals.borderCharacter1Color = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter2Color" then
+                    globals.borderCharacter2Color = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter3Color" then
+                    globals.borderCharacter3Color = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "helpMenuItemColor" then
+                    globals.helpMenuItemColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "helpMenuKeyColor" then
+                    globals.helpMenuKeyColor = locals.airlinkThemeItemPart[1]
+                end if
+            end for
+        end function
+        
+        load_theme("professional.ini") //inject theme name string here to override default theme
+
+        if playerDatabaseDir == null then playerDatabaseDir = home_dir + "/Airlink/Database"
+		if wifiDatabaseFilename == null then wifiDatabaseFilename = "wifiConnectionInfo.db"
+        // Set Database Location [wifiInfo_fileLocation]
+    	    wifiInfo_fileLocation = playerDatabaseDir + "/" + wifiDatabaseFilename
+	// Initalize Application
+			ux_layer_0 = [] //Main Border
+			ux_layer_1 = [] //Labels / Deco
+			ux_layer_2 = [] //Info Text Display
+			targetWifiParts = []
+			userInput = ""
+			wifiIndex = 0
+			interfaceSelection = 0
+			publicRouter = null
+			isOnline = null
+            isOnline = myComputer.is_network_active
+		//Load Router	
+			if isOnline then
+				publicRouter = get_router
+                routerWhois = fetch_whois(publicRouter.public_ip)
+			end if
+			// Check for Database Dir
+                if not is_folder(myComputer.File(playerDatabaseDir)) then
+                    if not myShell.launch("/bin/mkdir", (playerDatabaseDir)) == 1 then exit("Unable to create database directory".color("Red"))
+                end if
+			// Check for file and create it if missing
+                if not file_exists(playerDatabaseDir, wifiDatabaseFilename) then
+                    errorString = touch(myComputer, playerDatabaseDir, wifiDatabaseFilename)
+                    if typeof(errorString) == "string" then exit(errorString)
+                end if
+			// Now that the file absolutely exists, grab the file object
+                shadowFile = myComputer.File(wifiInfo_fileLocation)
+                if not typeof(shadowFile) == "file" then exit("Problem loading wifi database file")
+			// Load Shadow File Contents
+                shadowContent = shadowFile.get_content
+                shadowList = (shadowContent.split(char(10)))//.crop
+		//Define UX Layer 0
+        load_layer_0 = function(borderCharacter1, borderCharacter1Color, borderCharacter2, borderCharacter2Color, borderCharacter3, borderCharacter3Color, leftBorder, rightBorder)
+            globals.ux_layer_0 = []
+			globals.ux_layer_0.push((borderCharacter2*61).color(borderCharacter2Color).pos(leftBorder))
+			globals.ux_layer_0.push((borderCharacter3*61).color(borderCharacter3Color).pos(leftBorder))
+			globals.ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+			globals.ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+			globals.ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+			globals.ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+			globals.ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+			globals.ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+			globals.ux_layer_0.push((borderCharacter1*61).color(borderCharacter1Color).pos(leftBorder))
+			globals.ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+			globals.ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+			globals.ux_layer_0.push((borderCharacter1*61).color(borderCharacter1Color).pos(leftBorder))
+			globals.ux_layer_0.push(borderCharacter2.color(borderCharacter2Color).pos(leftBorder) + borderCharacter2.color(borderCharacter2Color).pos(rightBorder))
+			globals.ux_layer_0.push((borderCharacter2*61).color(borderCharacter2Color).pos(leftBorder))
+        end function
+
+        load_layer_0(borderCharacter1, borderCharacter1Color, borderCharacter2, borderCharacter2Color, borderCharacter3, borderCharacter3Color, leftBorder, rightBorder)
+
+    // Load Local cryptoLib
+        Crypto = load_lib("crypto.so", "/lib", "cryptoLib")
+        getBroadcasts = get_shell.host_computer.wifi_networks(network_device_list[interfaceSelection][0])
+// Start Application
+	while not userInput =="Escape"
+        loopTime = time
+	// Reset UX
+		ux_layer_1 = []
+    // Check Environment
+        isOnline = myComputer.is_network_active
+	// Check User Input
+		userInput = poll_input
+        if userInput and not userInput == "F1" then
+            showHelp = false
+        end if
+		if userInput == "F1" then
+			if showHelp == false then
+				showHelp = true
+			else if showHelp == true then
+				showHelp = false
+			end if
+		end if        
+		if userInput == "F2" then
+			if showThemeList == false then
+				showThemeList = true
+			else if showThemeList == true then
+				showThemeList = false
+			end if
+		end if        
+		if userInput == "Home" then
+			myShell.launch("/usr/bin/Browser.exe", publicRouter.public_ip + ":80")
+		end if        
+		if userInput == "Insert" then
+            if showThemeList == true then                    
+                myShell.launch("/usr/bin/Notepad.exe", home_dir + "/Airlink/Theme/" + themeList[themeIndexSelection].name)
+            else
+			    myShell.launch("/usr/bin/Notepad.exe", wifiInfo_fileLocation)
+            end if
+		end if
+		if userInput == "Tab" then
+			interfaceSelection = interfaceSelection + 1
+			if interfaceSelection > network_device_list.len - 1 then interfaceSelection = 0
+		end if
+		if userInput == "UpArrow" then
+            if showThemeList == true then
+                themeIndexSelection = themeIndexSelection - 1
+                if themeIndexSelection < -2 then themeIndexSelection = -2
+            else
+                wifiIndex = wifiIndex - 1
+                if wifiIndex < 0 then wifiIndex = 0
+            end if
+		end if
+		if userInput == "DownArrow" then
+            if showThemeList == true then
+                themeIndexSelection = themeIndexSelection + 1
+                themeCount = (myComputer.File(home_dir + "/Airlink/Theme").get_files).len
+                if themeIndexSelection > (themeCount - 1) then themeIndexSelection = (themeCount - 1)
+            else
+                wifiIndex = wifiIndex + 1
+                if wifiIndex > getBroadcasts.len - 1 then wifiIndex = (getBroadcasts.len - 1)
+            end if
+		end if
+		for i in range(14)
+			ux_layer_1.push("".alpha(alphaSetting))
+		end for
+        // Check if cryptoLib loaded
+        if typeof(Crypto) == "cryptoLib" then
+            ux_layer1 = "CryptoLib: ".pos("1em") + "Loaded".color(passColor).pos("7em")
+        else
+            ux_layer1 = "CryptoLib: ".pos("1em") + "Failed".color(failColor).pos("7em")
+        end if
+        // Check for internet connection
+		if isOnline then
+			isOnline = "True".color(passColor)
+		else
+			isOnline = "False".color(failColor)
+		end if
+        
+		ux_layer1 = ux_layer1 + ("Online: " + isOnline).pos("13em") + (network_device_list[interfaceSelection][0]).pos("33em")
+		ux_layer_1[13] = (ux_layer1)	
+        knownPass = "unknown"
+        if refreshTimer >= (time - 300) then
+            getBroadcasts = get_shell.host_computer.wifi_networks(network_device_list[interfaceSelection][0])
+            refreshTimer = time
+        end if
+        ux_layer_1[1] = ((("Signal").underline.pos(str(poz) + "em") + ("eSSID").underline.pos(str(poy) + "em") + ("bSSID / Public IP").underline.pos(str(pox) + "em")).color(defaultTextColor))
+
+        // Ensure wifiIndex stays within valid bounds
+        if wifiIndex < 0 then wifiIndex = 0
+        if wifiIndex >= getBroadcasts.len then wifiIndex = getBroadcasts.len - 1
+
+        // If the cursor moves past the bottom of the current screen view
+        if wifiIndex >= scrollOffset + windowSize then
+            scrollOffset = wifiIndex - windowSize + 1
+
+        // If the cursor moves above the top item of the current screen view
+        else if wifiIndex < scrollOffset then
+            scrollOffset = wifiIndex
+        end if        
+
+        if themeIndexSelection >= themeScrollOffset + windowSize then
+            themeScrollOffset = themeIndexSelection - windowSize + 1
+        else if themeIndexSelection < themeScrollOffset then
+            themeScrollOffset = themeIndexSelection
+        end if
+        // Select Output Display
+        if showHelp == true then
+            ux_layer_1[2] = ("Toggle Help        [F1]").color(defaultTextColor).pos("2em")
+            ux_layer_1[3] = ("Toggle Theme Menu  [F2]".color(defaultTextColor).pos("2em"))
+            ux_layer_1[4] = ("Cycle Adaptor      [TAB]").color(defaultTextColor).pos("2em")
+            ux_layer_1[5] = ("Exit the Program   [ESC]").color(defaultTextColor).pos("2em")
+            ux_layer_1[6] = ("Scroll Up          [UpArrow]").color(defaultTextColor).pos("2em")	
+            ux_layer_1[7] = ("Scroll Down        [DownArrow]").color(defaultTextColor).pos("2em")
+            ux_layer_1[9] = ("Select Option      [RightArrow]").color(defaultTextColor).pos("2em")
+            ux_layer_1[10] = ("Open Password File [Insert] Open Theme File").color(defaultTextColor).pos("2em")
+            ux_layer_1[12] = ("Browser IP Address [Home]").color(defaultTextColor).pos("2em")
+            
+        else if showThemeList == true then
+            themeList = myComputer.File(home_dir + "/Airlink/Theme").get_files
+            for i in range(themeScrollOffset, themeScrollOffset + windowSize - 1)
+                if i >= themeList.len then break
+                themeName = themeList[i]
+                displaySlot = (i - themeScrollOffset) + 2
+                if i == themeIndexSelection then
+                    ux_layer_1[displaySlot] = (themeName.name).mark(selectionHighlightColor).pos("2em")
+                else
+                    ux_layer_1[displaySlot] = (themeName.name).pos("2em")
+                end if
+            end for
+        else if not typeof(getBroadcasts) == "list" then
+            ux_layer_1[2] = ("Interface " + network_device_list[interfaceSelection][0] + " failed".color(failColor)).pos("2em")
+            ux_layer_1[3] = ((network_device_list[interfaceSelection][0] + " is not a wireless device").pos("2em"))
+            ux_layer_1[4] = (("Monitor: " + "Failed ".color(failColor)).pos("2em"))
+            ux_layer_1[5] = ("Adaptor Model: " + network_device_list[interfaceSelection][1]).pos("2em")
+        else if typeof(getBroadcasts) == "list" then
+        // Calculate the boundary of the  visible window
+            endIdx = scrollOffset + windowSize - 1
+            if endIdx >= getBroadcasts.len then endIdx = getBroadcasts.len - 1
+        //Loop through visible window
+            for ssid in range(scrollOffset, endIdx)
+                if not getBroadcasts.hasIndex(ssid) then continue
+                ssidParts = split(getBroadcasts[ssid], " ")
+                if to_int(ssidParts[1].remove("%")) == 0  then signalBar = noBar
+                if to_int(ssidParts[1].remove("%")) > 0  and to_int(ssidParts[1].remove("%")) <= 8   then signalBar = lowBar.color(signalColor0)
+                if to_int(ssidParts[1].remove("%")) > 8  and to_int(ssidParts[1].remove("%")) <= 16  then signalBar = lowBar.color(signalColor1)
+                if to_int(ssidParts[1].remove("%")) > 16 and to_int(ssidParts[1].remove("%")) <= 24  then signalBar = lowBar.color(signalColor2)
+                if to_int(ssidParts[1].remove("%")) > 24 and to_int(ssidParts[1].remove("%")) <= 32  then signalBar = medBar.color(signalColor3)
+                if to_int(ssidParts[1].remove("%")) > 32 and to_int(ssidParts[1].remove("%")) <= 40  then signalBar = medBar.color(signalColor4)
+                if to_int(ssidParts[1].remove("%")) > 40 and to_int(ssidParts[1].remove("%")) <= 48  then signalBar = medBar.color(signalColor5)
+                if to_int(ssidParts[1].remove("%")) > 48 and to_int(ssidParts[1].remove("%")) <= 56  then signalBar = highBar.color(signalColor6)
+                if to_int(ssidParts[1].remove("%")) > 56 and to_int(ssidParts[1].remove("%")) <= 64  then signalBar = highBar.color(signalColor7)
+                if to_int(ssidParts[1].remove("%")) > 64 and to_int(ssidParts[1].remove("%")) <= 72  then signalBar = highBar.color(signalColor8)
+                if to_int(ssidParts[1].remove("%")) > 72 and to_int(ssidParts[1].remove("%")) <= 86  then signalBar = maxBar.color(signalColor9)
+                if to_int(ssidParts[1].remove("%")) > 86 and to_int(ssidParts[1].remove("%")) < 100 then signalBar = maxBar.color(signalColor10)
+                if to_int(ssidParts[1].remove("%")) == 100 then
+                    signalBar = maxBar.color(signalColor11)
+                end if
+                if isOnline and typeof(publicRouter) == "router" then
+                    if publicRouter.bssid_name == ssidParts[0] then ssidParts[0] = publicRouter.public_ip.color(ipAddressColor).bold
+                end if
+            //Check database and set status
+                markerTag = tag1.color("White")
+                shadowContent = shadowFile.get_content
+                if shadowContent.len > 0 then
+                    shadowList = (shadowContent.split(char(10))).crop
+                    for wifi in shadowList
+                        markerTag = tag1.color(tag2Color0)
+                        shadowPart = wifi.split(" ")
+                        if typeof(shadowPart) == "list" and shadowPart.len > 0 then
+                            if shadowPart[2].trim == ssidParts[2].trim then
+                                knownPass = shadowPart[3]
+                                markerTag = tag2.color(tag2Color1)
+                                break
+                            end if
+                        end if
+                    end for
+                
+                    if isOnline then
+                        if not myComputer.public_ip == lastIP then
+                            publicRouter = get_router
+                            routerWhois = fetch_whois(publicRouter.public_ip)
+                            lastIP = myComputer.public_ip
+                        end if
+                        if typeof(publicRouter) == "router" then
+                            if ssidParts[2].trim == publicRouter.essid_name then
+                                markerTag = tag2.color(tag2Color2)
+                            end if
+                        else if isOnline == true then
+                            publicRouter = get_router
+                            if typeof(publicRouter) == "router" then
+                                if myComputer.public_ip == publicRouter.public_ip then
+                                    markerTag = tag2.color(tag2Color2)
+                                end if
+                            end if
+                        end if
+                    end if
+                end if
+
+                // Display the visible items
+                displayLineIndex = (ssid - scrollOffset) + 2
+                ux_layer_1[displayLineIndex] = (markerTag.pos("1em") + (signalBar).pos("5em") + (ssidParts[1]).pos(str(poz) + "em") + ssidParts[2].pos(str(poy) + "em") + ssidParts[0].pos(str(pox) + "em"))
+
+                ux_layer_1[9] = (routerWhois.admin.pos("2em") + routerWhois.domain.pos("22em")).color(ipAddressColor)
+                ux_layer_1[10] = (routerWhois.email.pos("2em") + routerWhois.phone.pos("22em")).color(ipAddressColor)
+                
+                if wifiIndex == ssid then
+                    ux_layer_1[0] = ux_layer_1[displayLineIndex]
+                    if shadowContent.len > 0 then
+                        if not markerTag == "○".color(tag2Color0) then
+                            ux_layer_1[12] = (ssidParts[2] + " password is " + shadowPart[3].bold.color(defaultTextColor)).pos("2em")
+                        end if
+                    end if
+                end if
+            end for
+        end if 
+
+        integer_to_image = function(floatNumber)
+            floatNumber = str(floatNumber).remove(".")
+            floatParts = values(floatNumber)
+                for i in floatParts
+                    if to_int(i) > 0 and to_int(i) <=2 then
+                        floatParts[__i_idx] = "▂".color("LimeGreen")
+                    else if to_int(i) > 2 and to_int(i) <= 4 then
+                        floatParts[__i_idx] = "▄".color("Green")
+                    else if to_int(i) > 4 and to_int(i) <= 6 then
+                        floatParts[__i_idx] = "▅".color("Yellow")
+                    else if to_int(i) > 6 and to_int(i) <= 8 then
+                        floatParts[__i_idx] = "▆".color("Orange")
+                    else if to_int(i) == 0 then
+                        floatParts[__i_idx] = " "
+                    else
+                        floatParts[__i_idx] = "█".color("Red")
+                    end if
+                end for
+            return floatParts.join("")
+        end function
+
+        if lastPassword.len > 0 then
+            ux_layer_1[12] = ("Last Password: " + lastPassword.bold.color(defaultTextColor) + " from " + lastNetwork.bold.color(defaultTextColor)).pos("1em").color(helpMenuItemColor)
+        end if
+
+        //if params.len > 0 then
+        //    if params[0] == "debug" then
+                timeLeft = floor(300 - (time % 300))
+
+
+            ux_layer_1[12] = ("Active: " + str(round(time)).bold.color(defaultTextColor) + 
+                " ReScan " + (("<size=35%>" + "█" * ceil((timeLeft)/3))).pos("13em").color("LightBlue") + "</size>").pos("1em") + str(timeLeft).color(ipAddressColor).pos("13em") + ("<size=75%>" + integer_to_image(time - loopTime) + "</size>").pos("32em")            
+        //    end if
+        //end if
+
+	for line in ux_layer_0
+		if ux_layer_1.hasIndex(__line_idx) then
+			if wifiIndex + 2 == __line_idx and __line_idx <= 11 then
+				if showHelp == true or showThemeList == true or network_device_list[interfaceSelection][0].indexOf("eth") != null then
+					outputBuffer.push(line + (ux_layer_1[__line_idx]))
+				//else if not showThemeList == true then
+				//	print(line + (ux_layer_1[__line_idx]), true)
+                else
+                    outputBuffer.push(line + (ux_layer_1[__line_idx]).color(defaultTextColor).mark(selectionHighlightColor))
+				end if
+			else
+				outputBuffer.push(line + ux_layer_1[__line_idx].color(defaultTextColor))
+			end if
+		else
+			outputBuffer.push(line)
+		end if
+
+		
+		if __line_idx == 6 then
+			if userInput == "0" then
+				
+			end if
+			if userInput == "RightArrow" then
+                wait(0.1)
+                if not showThemeList == true then
+                    hasEntry = false
+                    targetWifiParts = split(getBroadcasts[wifiIndex], " ")
+                    if shadowContent.len > 0 then
+                        for wifi in shadowList
+                            shadowPart = wifi.split(" ")
+                            if shadowPart[2].trim == targetWifiParts[2].trim then
+                                hasEntry = true
+                                break
+                            end if
+                        end for
+                    end if
+                end if
+                if showThemeList == true then
+                    //exit(themeList[themeIndexSelection].name)
+                    load_theme(themeList[themeIndexSelection].name)
+                    load_layer_0(borderCharacter1, borderCharacter1Color, borderCharacter2, borderCharacter2Color, borderCharacter3, borderCharacter3Color, leftBorder, rightBorder)
+                else if hasEntry == false then
+					if typeof(Crypto) == "cryptoLib" then
+					if Crypto.airmon("start", network_device_list[interfaceSelection][0]) == 1 then						
+						outputBuffer.push(((borderCharacter1*61).color(borderCharacter1Color).pos(leftBorder)) + ("Getting " + str(get_acks(to_int(targetWifiParts[1].remove("%")))).bold.color(ackInfoColor) + " ACKS from " + targetWifiParts[2].bold.color	(ackInfoColor) + " with " + targetWifiParts[1].bold.color(ackInfoColor)).color(defaultTextColor).pos(str(poz) + "em") + " signal")
+							//startSniff = time
+							Crypto.aireplay(targetWifiParts[0], targetWifiParts[2], get_acks(to_int(targetWifiParts[1].remove("%"))))
+							lastPassword = Crypto.aircrack(current_path + "/" + "file.cap")
+							myComputer.File(current_path + "/" + "file.cap").delete
+							lastNetwork = targetWifiParts[2]
+							if shadowContent then
+								shadowFile.set_content(shadowContent + char(10) + targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword)
+							else
+								shadowFile.set_content(targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword)
+							end if
+						else
+							ux_layer_1[12] = ("Unable to start monitor mode".bold.color(failColor).pos("1em"))	
+						end if
+					else
+						ux_layer_1[12] = ("cryptoLib required: 'apt-get install crypto.so'".bold.color(failColor).pos("1em"))
+					end if
+				else
+					shadowContent + char(10) + targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword
+					//exit(network_device_list[interfaceSelection][0] + " " + targetWifiParts[0] + " " + targetWifiParts[2] + " " + shadowPart[3])
+					myComputer.connect_wifi(network_device_list[interfaceSelection][0], targetWifiParts[0], targetWifiParts[2], shadowPart[3])
+				end if
+					
+				//exit("Password is:" + lastPassword + " in :" + str(time - startSniff) + " seconds")
+				//Add Database Addition Here
+			end if
+			continue
+		end if
+	end for
+
+    for line in outputBuffer
+        print(line, true)
+    end for
+    outputBuffer = []
+	wait(0.1)
+	knownPass = "unknown"
+    end while        
