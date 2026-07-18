@@ -1,0 +1,1065 @@
+// @startuml
+// title <color:purple>fetch_whois Function Overview</color>
+//
+// class fetch_whois {
+//   .. <color:blue>Input</color> ..
+//   + routerPublicIPAddress : string
+//
+//   .. <color:blue>Return</color> ..
+//   + returns : whoisInfo
+// }
+//
+// class whoisInfo {
+//   .. <color:blue>Standard Whois Fields</color> ..
+//   + admin : string
+//   + domain : string
+//   + email : string
+//   + phone : string
+//   + network : string
+//
+//   .. <color:blue>Error Handling</color> ..
+//   + error : string
+// }
+//
+// fetch_whois -right-> whoisInfo : creates instance of
+//
+// note bottom of whoisInfo
+//   * Contains IP registration and contact metadata
+//   * Fields populated from WHOIS lookup
+//   * On error, only `.error` is set
+// end note
+//
+// note bottom of fetch_whois
+//   * Validates that IP is public and well-formed
+//   * Rejects LAN addresses and malformed input
+//   * Uses `whois()` to extract structured details
+// end note
+//
+// @enduml
+
+// Pull whosis information from a public ip address
+	// @description **Description:**
+	// Return map with whois information
+	// @description ---
+	//
+	// @description **Parameters:**
+	// @param {string} routerPublicIPAddress
+	// @description - `routerPublicIPAddress`:`<string>`
+	//
+	// @description **Parameter Defaults:**
+	// @description - `none`
+	//
+	// @description **Return:**
+	// @return {map<string,string>}
+	// @description `map`:`whoisInfo`
+	// @description - `.admin`:`<string>` The administrative contacts' name
+	// @description - `.domain`:`<string>` The domain name of the ip address
+	// @description - `.email`:`<string>` The email address for the administrative contact
+	// @description - `.network`:`<string>` The network identifier (if any)
+	// @description - `.phone`:`<string>` The phone number for the administrative contract
+	// @description ---	
+	// @description - - `.error`:`<string>` {on error} will return obect with only this property
+	// @description ---
+	//    
+	// @description **Author:** Svarii
+	// @description **Version:** 0.0.1
+	// @description ---
+	// 
+	// @example whoisInfo = fetch_whois(params[0])
+	// @example
+	// print whoisInfo.domain
+	// @example
+	// print whoisInfo.admin
+	// @example
+	// print whoisInfo.email
+	// @example
+	// print whoisInfo.phone
+	// @example
+	// print whoisInfo.network
+fetch_whois = function(routerPublicIPAddress)
+	if not is_lan_ip(locals.routerPublicIPAddress) == true then
+		if is_valid_ip(routerPublicIPAddress) then
+			locals.whoisInfo = {"classID":"whoisInfo", "admin":"", "domain":"", "email":"", "network":"", "phone":"", "error":null}
+			locals.what = split(whois(locals.routerPublicIPAddress), "\n")
+			locals.whoisInfo.domain = str(split(locals.what[0], ":")[1]).trim
+			locals.whoisInfo.admin = str(split(locals.what[1], ":")[1]).trim
+			locals.whoisInfo.email = str(split(locals.what[2], ":")[1]).trim
+			locals.whoisInfo.phone = str(split(locals.what[3], ":")[1]).trim
+			if locals.what.len >= 5 then
+				locals.whoisInfo.network = str(split(locals.what[4], ":")[0]).trim
+			else
+				locals.whoisInfo.network = "[ UNKNOWN ]"
+			end if
+		else 
+			locals.whoisInfo = {"classID":"whoisInfo", "error":"Invalid Public IP Address Provided."}	
+		end if
+	else
+		locals.whoisInfo = {"classID":"whoisInfo", "error":"Needs Public IP, Provided Local IP."}
+	end if
+	locals.whoisInfo.error = false
+	return locals.whoisInfo
+end function
+
+// Crops off empty elements from the start and end of a list
+// @description **Description:**
+// @description Iterates through a list end and checks for empty items, if found, `.remove` is used on list item
+// @description ---
+//
+// @description **Parameters:**
+// @description - none
+//
+// @description **Return:**
+// @return {list}
+// @description `list` The same list with empty items purged from ends
+// @description ---
+//
+// @description **Author:** Svarii
+// @description **Version:** 0.0.1
+// @description ---
+//
+// @example myList = ["","","cat","dog",""];
+// @example result = myList.crop
+// @example
+// print(result); // Output: ["cat","dog"]
+// @description ---        
+    list.crop = function()
+        while not self[self.len - 1].len > 0
+            self.remove(self.len - 1)
+        end while
+        while not self[0].len > 0
+            self.remove(0)
+        end while
+        return self
+    end function
+//@name crop
+    //  * @startuml
+    //  * entity ListObject
+    //  * control ".crop" as crop
+    //  *   ListObject -> crop : [//""//,//""//,"item1", "item2", //""//]
+    //  *   crop -> ListObject : ["item1", "item2"]
+    //  * footer
+    //  *   list.crop
+    //  * endfooter         
+    //  * @enduml  
+
+// @startuml
+// title <color:purple>load_lib Function Interface</color>
+// 
+// class load_lib {
+//   .. <color:blue>Parameters</color> ..
+//   + libName : string = "metaxploit.so"
+//   + libDir : string = "/lib"
+//   + libType : string = ""
+// 
+//   .. <color:blue>Internal Variables</color> ..
+//   - libLocation : string
+//   - lib : object
+// }
+// 
+// class objectLibrary {
+//   .. <color:blue>Return Type</color> ..
+//   * Loaded API methods and properties
+// }
+// 
+// load_lib ..> objectLibrary : returns
+// load_lib ..> "null" : returns
+// 
+// note right of load_lib
+//   <b>Validation Behavior:</b>
+//   * Returns null if libName is empty
+//   * Returns null if file type mismatch
+//   * Case-sensitive type checking
+// end note
+// 
+// @enduml
+
+
+
+
+// Applies alpha tag to the string
+    // @description **Description:**
+    // @description Modifies a text string and prepends it with the alpha tag
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} [hexOpacity]
+    // @description - `hexOpacity` Accepted values: 2 digit HEX value preceded by #
+    //
+    // @description **Parameter Defaults:**
+    // @description - `hexOpacity`:`#FF`
+    //
+    // @description **Return:**
+    // @return {string}
+    // @description `string` the string value preceded by the `<alpha>` tag
+    // @description ---
+    //
+    // @description **Links:**
+    // @description [Text Mesh Pro: Rich Text Opacity](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextOpacity.html)
+    // @description ---
+    //    
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    // @description ***footnotes***   
+    // @description Parameters are not checked for validity   
+    // @description - `hexOpacity` will not reject invalid values | **Return**: `string<withParseIssues>`
+    // @description - does not apply a closing tag and affects all text that follows
+    // @description - will apply transparancy (default) #FF if no paramaters are passed
+    // @description ---        
+    //
+    // @example newString = "Hello"
+    // @example 
+    // @example result = newString.alpha("#4C")
+    // @example 
+    // print(result); // Output: <alpha=#4C>Hello
+    // @example 
+    // @example result = newString.alpha
+    // @example 
+    // print(result); // Output: <alpha=#FF>Hello    
+string.alpha = function(hexOpacity = "#FF")
+    return "<alpha=" + locals.hexOpacity + ">" + self
+end function
+
+// **Description:**
+// Caculates the recommended amount of ACKs to collect
+// @param {number} signalStrength - `signlaStrength`:`number`
+// @description ---
+//
+// @description **Parameters:**
+// @param {string} signalStrength - The name of the library to load.
+// @description - `signalStrength`:`number`
+// @description ---
+//
+// @description **Parameter Defaults:**
+// @description - `signalStrength`:`1`
+// @description ---   
+//
+// @description **Return:**
+// @return {number}
+// @description `number` Recommended number of ACKs to collect
+// @description ---   
+//    
+// @description **Author:** Svarii
+// @description **Version:** 0.0.1
+// @description ---    
+//
+// @example reqACK = calculate_acks(6) // Signal Strength 6%
+// @example
+// print(reqACK) // Output: 14286
+	get_acks = function(signalStrength = 1)
+		if not typeof(locals.signalStrength) == "number" then
+			locals.removePercent = locals.signalStrength.remove("%") //check for % in number string
+			locals.newNumber = typeof(to_int(locals.removePercent))
+			if not locals.newNumber == "number" then return null 
+			if locals.newNumber < 0 then return null
+			if locals.newNumber > 100 then return null
+			locals.signalStrength = locals.newNumber
+		end if
+		if locals.signalStrength <= 0 or locals.signalStrength > 100 then return null
+		return ceil(300000 / (locals.signalStrength + 15))
+	end function 
+
+// Applies mark tag to the string
+    // @description **Description:**
+    // @description Modifies a text string by wrapping it within the mark tag
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} [color]
+    // @description - `color`:`string` | #RRGGBBAA [ HEXA ] 
+    //
+    // @description **Parameter Defaults:**
+    // @description - `color`:`#FFFF00AA`
+    //
+    // @description **Return:**
+    // @return {string}
+    // @description `string` The string value wrapped within the `<mark>` tag
+    // @description ---
+    //
+    // @description **Links:**
+    // @description - [Text Mesh Pro: Rich Text mark](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextMark.html  )	
+    // @description ---	
+    //
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    //  @example newString = "Hello"
+    //  @example 
+    //  @example result = newString.mark
+    //  @example 
+    //  print(result); // Outputs: <mark="#FFFF00AA">Hello</mark>   
+string.mark = function(color="#FFFF00BF")
+    return "<mark=" + locals.color + ">" + self + "</mark>"
+end function 
+
+// Return Network Devices in a list
+// @description **Description**
+// @description Pull network devices from host computer and return a list of network device information as lists
+// @description ---
+//
+// @description **Parameters:**
+// @param {string} [user]]
+// @param {string} [pass]
+// @description - `user` (**string**, *optional*): The username to use for access
+// @description - `pass` (**string**, *optional*): The password to use for access
+// @description ---
+//
+// @description **Default Parameters:**
+// @description - none
+//
+// @return {list<list<string>>}
+// @description **Return**
+// `list[list[string, string, string]]`:`[adaptor, model, monitor_enabled]`
+// @description ---    
+//    
+// @description **Author:** Svarii
+// @description **Version:** 0.0.1
+// @description ---    
+	network_device_list = function(user = "", pass = "")
+		locals.networkDevices = split(get_shell(locals.user, locals.pass).host_computer.network_devices, char(10))
+		locals.networkDeviceList = []
+		for device in locals.networkDevices
+			if locals.device then locals.networkDeviceList.push(split(locals.device, " "))
+		end for
+		return locals.networkDeviceList
+end function
+
+// Loads a library
+// @description **Description:**
+// Loads a library from the lib directory, optionally specifiy directory, optionally verify type
+// @description ---
+// 
+// @description **Links:**
+// [Default type list](https://documentation.greyscript.org/#GENERAL_TYPEOF)
+// @description ---
+// 
+// @description **Parameters:**
+// @param {string} libName
+// @param {string} [libDir]
+// @param {string} [libType]
+// @description - `libName` (**string**): The file name of the library to scan.
+// @description - `libDir` (**string**, *optional*): The directory where the library is located.
+// @description - `libType` (**string**, *optional*): The expected type of the library.
+//
+// @description **Return:** `objectLibrary` | `null`
+// @return {objectLibrary | null}
+// @return {objectLibrary} 
+// @description ---   
+// 
+// @description **Author:** Svarii
+// @description **Version:** 0.0.3
+// @description ---    
+//
+// @description *footnotes*
+// @description * `libName` must be full filename including extension
+// @description * `libDir` should not have trailing slash
+// @description * `libType` is case sensitive
+// @description ---
+// 
+// @example lib = load_lib                                              //Load metaxploit.so from /lib directory
+// @example lib = load_lib("metaxploit.so")                             //Load a library without specifying type
+// @example lib = load_lib("customLib.so", "/altLib")                   //Load a library from specified directory
+// @example lib = load_lib("crypto.so", "/lib", "cryptoLib")            //Load a library with a specified type (null on type mismatch)
+load_lib = function(libName = "metaxploit.so", libDir = "/lib", libType = "")
+    locals.libLocation = locals.libDir + "/" + locals.libName
+    if locals.libName == "" then
+        return null
+    end if
+    locals.lib = include_lib(locals.libLocation)
+        if not typeof(locals.lib) == null then
+            if locals.libType == "" then
+                return locals.lib
+            else if typeof(locals.lib) == locals.libType then
+                return locals.lib
+			else
+				return null
+            end if
+        else
+            return null
+        end if
+end function
+// @startuml
+// title <color:purple>load_lib Function Diagram</color>
+// 
+// class load_lib {
+//   .. <color:blue>Parameters</color> ..
+//   + libName : string = "metaxploit.so"
+//   + libDir : string = "/lib"
+//   + libType : string = ""
+// 
+//   .. <color:blue>Returns</color> ..
+//   + objectLibrary | null
+// }
+// 
+// note right of load_lib
+//   <b>Footnotes:</b>
+//   * libName must be full filename including extension
+//   * libDir should not have trailing slash
+//   * libType is case sensitive
+// end note
+// 
+// @enduml
+
+
+// Applies align tag to the string
+    // @description **Description:**
+    // @description Modifies a text string to wrap it in the align tag
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} [alignment]
+    // @description - `alignment` Accepted values: `left`, `center`, `right`, `justified`, and `flush`
+    // @param {boolean} [closeTag]
+    // @description - `closeTag` Accepted values: `true` or `false`
+    //
+    // @description **Parameter Defaults:**
+    // @description - `alignment`:`center`
+    // @description - `closeTag`:`true`
+    //
+    // @description **Return:**
+    // @return {string}
+    // @description `string` the string value embedded in (or preceded by) the `<align>` tag
+    // @description ---
+    //
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    // @example newString = "Hello"
+    // @example 
+    // @example result = newString.align("center")
+    // @example 
+    // print result // Output: <align="center">Hello</align>
+    // @example         
+    // @example result = newString.align("center", false)
+    // @example 
+    // print result // Output: <align="center">Hello
+    // @description ---        
+    // @description **Links:**
+    // @description [Text Mesh Pro: Rich Text Alignment](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextAlignment.html)
+    // @description ---       
+    // @description ***footnotes***   
+    // @description Parameters are not checked for validity   
+    // @description - `alignment` will not reject invalid values | **Return**: `string<withParseIssues>`
+    // @description - `closeTag` will not reject invalid values | **Return**: `null`
+    // @description
+    // @description If all paramaters passed are invalid | **Return**: `null`
+    // @description ---  
+string.align = function(alignment = "center", closeTag = true)
+    locals.newString = "<align=" + locals.alignment + ">" + self
+    if locals.closeTag == true then locals.newString = locals.newString + "</align>"
+    return locals.newString
+end function   
+
+
+        // Return true or false as a string
+        // @description **Description:**
+        // @description Convert a boolean value **(`true`|`false`)** | **(`0`|`1`)** into `<string>`: `"true"`|`"false"`
+        // @description ---
+        //
+        // @description **Parameters:**
+        // @param {flag} boolVal
+        // @description - `boolVal`:`<flag>`
+        //
+        // @description **Parameter Defaults:**
+        // @description - `none`
+        //
+        // @description **Return:** `string`: `"true"` | `"false"`
+        // @return {string}
+        // @description ---
+        //    
+        // @description **Author:** Svarii
+        // @description **Version:** 0.0.1
+        // @description ---
+        //
+        // @description ***footnotes***   
+        // @description Parameters are not checked for validity   
+        // @description - Any invalid values passed will return `null`
+        // @description - Negative numbers will return `"false"`
+        // @description ---        
+        //
+        // @example 
+        // print (bool_text("true")) //Output: null
+        // @example
+        // print (bool_text(true)) //Output: "true"
+        // @example
+        // print (bool_text(1)) //Output: "true"
+        // @example
+        // print (bool_ttestext(0)) //Output: "false"
+        // @example
+        // print (bool_text(-1)) //Output: "false"
+        // @example
+        // print (bool_text(false)) //Output: "false"
+        // @example
+        // print (bool_text(object)) //Output: null
+    bool_text = function(boolVal, text = ["true", "false"], colors = ["red", "green"])
+            locals.boolText = {"yes":locals.text[0], "no":locals.text[1]}
+            if locals.boolVal < 0 then return "<color=" + locals.colors[1] + ">" + locals.boolText.no + "</color>"
+            if locals.boolVal > 1 then return "<color=" + locals.colors[0] + ">" + locals.boolText.yes + "</color>"
+            if locals.boolVal == 1 then return "<color=" + locals.colors[0] + ">" + locals.boolText.yes + "</color>"
+            if locals.boolVal == 0 then return "<color=" + locals.colors[1] + ">" + locals.boolText.no + "</color>"
+        return null
+    end function
+
+//Custom Functions
+    // Append to file
+    // @description **Description:**
+    // @description Appends data to an existing file, or creates a new file if file does not exist
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} savePath
+    // @description - `savePath`:`<string>`
+    // @param {string} `saveFile`:`<string>`
+    // @description - `saveFile`:`<string>`
+    // @param {string} `newText`:`<string>`
+    // @description - `newText`:`<string>`
+    //
+    // @description **Parameter Defaults:**
+    // @description - `none`
+    //
+    // @description **Return:**
+    // @return {void}
+    // @description `void`
+    // @description ---
+    //    
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    // @description ***footnotes***   
+    // @description Parameters are not checked for validity   
+    // @description ---        
+    //
+    // @example 
+    // @example dataString = "0xFC45B2XR9:missspeling"
+    // @example
+    // file_append("/DatabaseDir", "addressData.db", dataString) //Appends dataString to file
+    // @description ---  
+        file_append = function(savePath, saveFile, newText)
+            //********************************************
+            locals.fileContent = ""
+            locals.fileLocation = locals.savePath + "/" + locals.saveFile
+            //********************************************	
+            locals.hostComputer = get_shell.host_computer
+            locals.fileObj = locals.hostComputer.File(locals.fileLocation)
+            if not locals.fileObj then
+                locals.hostComputer.touch(locals.savePath, locals.saveFile)
+                locals.fileObj = locals.hostComputer.File(locals.fileLocation)
+            end if
+            //********************************************
+            //********************************************		
+            if locals.fileObj.has_permission("r") then
+                if locals.fileObj.has_permission("w") then
+                    locals.fileContent = locals.fileObj.get_content
+                    if locals.fileContent == null then
+                        locals.fileObj.set_content(locals.newText)
+                    else
+                        locals.fileObj.set_content(locals.fileContent + locals.newText)
+                    end if
+                else
+                print("Permission Error Saving Data to: " + locals.saveFile + " [No Write Permission]")
+                end if
+            else
+                print("Permission Error Saving Data to: " + locals.saveFile + " [No Read Permission]")
+            end if
+        end function
+
+    // Return Network Devices in a list of lists
+        // @description **Description**
+        // @description Pull network devices from host computer and return a list of network device information as lists
+        // @description ---
+        //
+        // @description **Parameters:**
+        // @param {string} [user]
+        // @param {string} [pass]
+        // @description - `user` (**string**, *optional*): The username to use for access
+        // @description - `pass` (**string**, *optional*): The password to use for access
+        // @description ---
+        //
+        // @description **Default Parameters:**
+        // @description - none
+        //
+        // @return {list<list<string>>}
+        // @description **Return**
+        // `list[list[string, string, string]]`:`[adaptor, model, monitor_enabled]`
+        // @description ---    
+        //    
+        // @description **Author:** Svarii
+        // @description **Version:** 0.0.1
+        // @description ---    
+    network_device_list = function(user = "", pass = "")
+        locals.networkDevices = split(get_shell(locals.user, locals.pass).host_computer.network_devices, char(10))
+        locals.networkDeviceList = []
+        for device in locals.networkDevices
+            if locals.device then locals.networkDeviceList.push(split(locals.device, " "))
+        end for
+        return locals.networkDeviceList
+    end function
+
+    // Applies pos arse tag to the string
+        // @description **Description:**
+        // @description Modifies a text string by prepending it with the pos tag
+        // @description ---
+        //
+        // @description **Parameters:**
+        // @description * `position`
+        //
+        // @description **Parameter Defaults:**
+        // @description - `position`:`"50%"`    
+        //
+        // @description **Return:**
+        // @return {string}
+        // @description `string` The string prepended with the `<pos>` tag
+        // @description ---
+        //
+        // @description **Links:**
+        // @description - [Text Mesh Pro: Horizontal Position](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextPos.html)	
+        // @description ---	
+        //
+        // @description **Author:** Svarii
+        // @description **Version:** 0.0.1
+        // @description ---
+        //
+        //  @example newString = "Hello"
+        //  @example 
+        //  @example result = newString.pos
+        //  @example 
+        //  print(result); // Output: <pos=50%>Hello
+    string.pos = function(position = "50%")
+        return "<pos=" + locals.position + ">" + self
+    end function
+
+    // Applies line-indent tag to the string
+        // @description **Description:**
+        // @description Modifies a text string to wrap it in the line-indent tag
+        // @description ---
+        //
+        // @description **Parameters:**
+        // @param {string} [alignment]
+        // @description - `alignment` Accepted values: `left`, `center`, `right`, `justified`, and `flush`
+        // @param {boolean} [closeTag]
+        // @description - `closeTag` Accepted values: `true` or `false`
+        //
+        // @description **Parameter Defaults:**
+        // @description - `alignment`:`center`
+        // @description - `closeTag`:`true`
+        //
+        // @description **Return:**
+        // @return {string}
+        // @description `string` the string value embedded in (or preceded by) the `<align>` tag
+        // @description ---
+        //
+        // @description **Author:** Svarii
+        // @description **Version:** 0.0.1
+        // @description ---
+        //
+        // @description ---        
+        // @description **Links:**
+        // @description [Text Mesh Pro: Rich Text Line Indentation](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextLineIndentation.html)
+        // @description ---       
+        // @description ***footnotes***   
+        // @description Parameters are not checked for validity   
+        // @description - `alignment` will not reject invalid values | **Return**: `string<withParseIssues>`
+        // @description - `closeTag` will not reject invalid values | **Return**: `null`
+        // @description
+        // @description If all paramaters passed are invalid | **Return**: `null`
+        // @description ---          
+        //
+        // @return {string}
+        // @example newString = "Hello"
+        // @example 
+        // @example result = newString.line_indent("50%")
+        // @example 
+        // print(result); // Outputs: <line-indent=50%>Hello      
+    string.line_indent = function(lineIndent = "15%")
+        return "<line-indent=" + locals.lineIndent + ">" + self
+    end function
+
+    // Applies underline tag to the string
+        // @description **Description:**
+        // @description Modifies a text string by wrapping it within the underline tag
+        // @description ---
+        //
+        // @description **Parameters:**
+        // @description * `none`
+        //
+        // @description **Return:**
+        // @return {string}
+        // @description `string` The string wrapped within the `<u>` tag
+        // @description ---
+        //
+        // @description **Links:**
+        // @description - [Text Mesh Pro: Underline](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextStrikethroughUnderline.html)	
+        // @description ---	
+        //
+        // @description **Author:** Svarii
+        // @description **Version:** 0.0.1
+        // @description ---
+        //
+        //  @example newString = "Hello"
+        //  @example 
+        //  @example result = newString.underline
+        //  @example 
+        //  print(result); // Output: <u>Hello</u>
+    string.underline = function()
+        return "<u>" + self + "</u>"
+    end function
+
+    // Applies mark tag to the string
+        // @description **Description:**
+        // @description Modifies a text string by wraping it within the mark tag
+        // @description ---
+        //
+        // @description **Parameters:**
+        // @param {string} [color]
+        // @description - `color`:`string` | #RRGGBBAA [ HEXA ] 
+        //
+        // @description **Parameter Defaults:**
+        // @description - `color`:`#FFFF00AA`
+        //
+        // @description **Return:**
+        // @return {string}
+        // @description `string` The string value wrapped within the `<mark>` tag
+        // @description ---
+        //
+        // @description **Links:**
+        // @description - [Text Mesh Pro: Rich Text mark](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextMark.html  )	
+        // @description ---	
+        //
+        // @description **Author:** Svarii
+        // @description **Version:** 0.0.1
+        // @description ---
+        //
+        //  @example newString = "Hello"
+        //  @example 
+        //  @example result = newString.mark
+        //  @example 
+        //  print(result); // Outputs: <mark="#FFFF002C">Hello</mark>   
+    string.mark = function(color="#FFFF002C")
+        return "<mark=" + locals.color + ">" + self + "</mark>"
+    end function
+
+    // Applies bold tag to the string
+        // @description **Description:**
+        // @description Modifies a text string and wraps within the bold tag
+        // @description ---
+        //
+        // @description **Parameters:**
+        // @description - None
+        //
+        // @description **Return:**
+        // @return {string}
+        // @description `string` the string value embedded in the `<b>` tag
+        // @description ---
+        //
+        // @description **Links:**
+        // @description [Text Mesh Pro: Rich Text Bold](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextBoldItalic.html)
+        // @description ---
+        //    
+        // @description **Author:** Svarii
+        // @description **Version:** 0.0.1
+        // @description ---     
+        //
+        // @example newString = "Hello"
+        // @example 
+        // @example result = newString.bold
+        // @example 
+        // print(result); // Output: <b>Hello</b>          
+        // @description --- 
+    string.bold = function()
+        return "<b>" + self + "</b>"
+    end function  
+
+
+    string.color = function(colorValue)
+        if not typeof(colorValue) == "string" then return self
+        //*****************************************************
+        // Red HEX Codes
+        //*****************************************************	
+        if colorValue == "IndianRed" then colorValue = "#CD5C5C"
+        if colorValue == "LightCoral" then colorValue = "#F08080"
+        if colorValue == "Salmon" then colorValue = "#FA8072"
+        if colorValue == "DarkSalmon" then colorValue = "#E9967A"
+        if colorValue == "LightSalmon" then colorValue = "#FFA07A"			
+        if colorValue == "Crimson" then colorValue = "#DC143C"
+        if colorValue == "Red" then colorValue = "#FF0000"
+        if colorValue == "FireBrick" then colorValue = "#B22222"
+        if colorValue == "DarkRed" then colorValue = "#8B0000"
+        //*****************************************************
+        // Pink HEX Codes
+        //*****************************************************		
+        if colorValue == "Pink" then colorValue = "#FFC0CB"
+        if colorValue == "LightPink" then colorValue = "#FFB6C1"		
+        if colorValue == "HotPink" then colorValue = "#FF69B4"		
+        if colorValue == "DeepPink" then colorValue = "#FF1493"		
+        if colorValue == "MediumVioletRed" then colorValue = "#C71585"				
+        if colorValue == "PaleVioletRed" then colorValue = "#DB7093"				
+        //*****************************************************
+        // Orange HEX Codes
+        //*****************************************************					
+        if colorValue == "Coral" then colorValue = "#FF7F50"						
+        if colorValue == "Tomato" then colorValue = "#FF6347"				
+        if colorValue == "OrangeRed" then colorValue = "#FF4500"						
+        if colorValue == "DarkOrange" then colorValue = "#FF8C00"				
+        if colorValue == "Orange" then colorValue = "#FFA500"						
+        //*****************************************************
+        // Yellow HEX Codes
+        //*****************************************************
+        if colorValue == "Gold" then colorValue = "#FFD700"
+        if colorValue == "Yellow" then colorValue = "#FFFF00"
+        if colorValue == "LightYellow" then colorValue = "#FFFFE0"
+        if colorValue == "LemonChiffon" then colorValue = "#FFFACD"
+        if colorValue == "LightGoldenrodYellow" then colorValue = "#FAFAD2"        
+        if colorValue == "PapayaWhip" then colorValue = "#FFEFD5"
+        if colorValue == "Moccasin" then colorValue = "#FFE4B5"
+        if colorValue == "PeachPuff" then colorValue = "#FFDAB9"
+        if colorValue == "PaleGoldenrod" then colorValue = "#EEE8AA"
+        if colorValue == "Khaki" then colorValue = "#F0E68C"                                					
+        if colorValue == "DarkKhaki" then colorValue = "#BDB76B"                                					        
+        //*****************************************************
+        // Purple HEX Codes
+        //*****************************************************
+        if colorValue == "Lavender" then colorValue = "#E6E6FA"
+        if colorValue == "Thistle" then colorValue = "#D8BFD8"
+        if colorValue == "Plum" then colorValue = "#DDA0DD"
+        if colorValue == "Violet" then colorValue = "#EE82EE"
+        if colorValue == "Orchid" then colorValue = "#DA70D6"        
+        if colorValue == "Fuchsia" then colorValue = "#FF00FF"
+        if colorValue == "Magenta" then colorValue = "#FF00FF"
+        if colorValue == "MediumOrchid" then colorValue = "#BA55D3"
+        if colorValue == "MediumPurple" then colorValue = "#9370DB"
+        if colorValue == "RebeccaPurple" then colorValue = "#663399"                                					
+        if colorValue == "BlueViolet" then colorValue = "#8A2BE2"
+        if colorValue == "DarkViolet" then colorValue = "#9400D3"
+        if colorValue == "DarkOrchid" then colorValue = "#9932CC"
+        if colorValue == "DarkMagenta" then colorValue = "#8B008B"
+        if colorValue == "Purple" then colorValue = "#800080"
+        if colorValue == "Indigo" then colorValue = "#4B0082"        
+        if colorValue == "SlateBlue" then colorValue = "#6A5ACD"
+        if colorValue == "DarkSlateBlue" then colorValue = "#483D8B"
+        if colorValue == "MediumSlateBlue" then colorValue = "#7B68EE" 
+        //*****************************************************
+        // Green HEX Codes
+        //*****************************************************
+        if colorValue == "GreenYellow" then colorValue = "#ADFF2F"
+        if colorValue == "Chartreuse" then colorValue = "#7FFF00"
+        if colorValue == "LawnGreen" then colorValue = "#7CFC00"
+        if colorValue == "Lime" then colorValue = "#00FF00"
+        if colorValue == "LimeGreen" then colorValue = "#32CD32"        
+        if colorValue == "PaleGreen" then colorValue = "#98FB98"
+        if colorValue == "LightGreen" then colorValue = "#90EE90"
+        if colorValue == "MediumSpringGreen" then colorValue = "#00FA9A"
+        if colorValue == "SeaGreen" then colorValue = "#2E8B57"
+        if colorValue == "ForestGreen" then colorValue = "#228B22"                                					
+        if colorValue == "Green" then colorValue = "#008000"
+        if colorValue == "DarkGreen" then colorValue = "#006400"
+        if colorValue == "YellowGreen" then colorValue = "#9ACD32"
+        if colorValue == "OliveDrab" then colorValue = "#6B8E23"
+        if colorValue == "Olive" then colorValue = "#808000"
+        if colorValue == "DarkOliveGreen" then colorValue = "#556B2F"        
+        if colorValue == "MediumAquamarine" then colorValue = "#66CDAA"
+        if colorValue == "DarkSeaGreen" then colorValue = "#8FBC8B"
+        if colorValue == "LightSeaGreen" then colorValue = "#20B2AA" 
+        if colorValue == "DarkCyan" then colorValue = "#008B8B"        
+        if colorValue == "Teal" then colorValue = "#008080"
+        //*****************************************************
+        // Blue HEX Codes
+        //*****************************************************	
+        if colorValue == "Aqua" then colorValue = "#00FFFF"
+        if colorValue == "Cyan" then colorValue = "#00FFFF"
+        if colorValue == "LightCyan" then colorValue = "#E0FFFF"
+        if colorValue == "PaleTurquoise" then colorValue = "#AFEEEE"
+        if colorValue == "Aquamarine" then colorValue = "#7FFFD4"        
+        if colorValue == "Turquoise" then colorValue = "#40E0D0"
+        if colorValue == "MediumTurquoise" then colorValue = "#48D1CC"
+        if colorValue == "DarkTurquoise" then colorValue = "#00CED1"
+        if colorValue == "CadetBlue" then colorValue = "#5F9EA0"
+        if colorValue == "SteelBlue" then colorValue = "#4682B4"                           					
+        if colorValue == "LightSteelBlue" then colorValue = "#B0C4DE"
+        if colorValue == "PoweredBlue" then colorValue = "#B0E0E6"
+        if colorValue == "LightBlue" then colorValue = "#ADD8E6"
+        if colorValue == "SkyBlue" then colorValue = "#87CEEB"
+        if colorValue == "LightSkyBlue" then colorValue = "#87CEFA"
+        if colorValue == "DeepSkyBlue" then colorValue = "#00BFFF"        
+        if colorValue == "DodgerBlue" then colorValue = "#1E90FF"
+        if colorValue == "CornflowerBlue" then colorValue = "#6495ED"
+        if colorValue == "MediumSlateBlue" then colorValue = "#7B68EE"
+        if colorValue == "RoyalBlue" then colorValue = "#4169E1"
+        if colorValue == "Blue" then colorValue = "#0000FF"
+        if colorValue == "MediumBlue" then colorValue = "#0000CD"
+        if colorValue == "DarkBlue" then colorValue = "#00008B"  
+        if colorValue == "Navy" then colorValue = "#000080"
+        if colorValue == "MidnightBlue" then colorValue = "#191970"                        
+        //*****************************************************
+        // Brown HEX Codes
+        //*****************************************************	
+        if colorValue == "Cornsilk" then colorValue = "#FFF8DC"
+        if colorValue == "BlanchedAlmond" then colorValue = "#FFEBCD"
+        if colorValue == "Bisque" then colorValue = "#FFE4C4"
+        if colorValue == "NavajoWhite" then colorValue = "#FFDEAD"
+        if colorValue == "Wheat" then colorValue = "#F5DEB3"        
+        if colorValue == "BurlyWood" then colorValue = "#D#B887"
+        if colorValue == "Tan" then colorValue = "#D2B48C"
+        if colorValue == "RosyBrown" then colorValue = "#BC8F8F"
+        if colorValue == "SandyBrown" then colorValue = "#F4A460"
+        if colorValue == "Goldenrod" then colorValue = "#DAA520"                                					
+        if colorValue == "DarkGoldenrod" then colorValue = "#B8860B"
+        if colorValue == "Peru" then colorValue = "#CD853F"
+        if colorValue == "Chocolate" then colorValue = "#D2691E"
+        if colorValue == "SaddleBrown" then colorValue = "#8B4513"
+        if colorValue == "Sienna" then colorValue = "#A0522D"
+        if colorValue == "Brown" then colorValue = "#A52A2A"        
+        if colorValue == "Maroon" then colorValue = "#800000"          			
+        //*****************************************************
+        // White HEX Codes
+        //*****************************************************	
+        if colorValue == "White" then colorValue = "#FFFFFF"
+        if colorValue == "Snow" then colorValue = "#FFFAFA"
+        if colorValue == "HoneyDew" then colorValue = "#F0FFF0"
+        if colorValue == "MintCream" then colorValue = "#F5FFFA"
+        if colorValue == "Azure" then colorValue = "#F0F8FF"        
+        if colorValue == "AliceBlue" then colorValue = "#F0F8FF"
+        if colorValue == "GhostWhite" then colorValue = "#F8F8FF"
+        if colorValue == "WhiteSmoke" then colorValue = "#F5F5F5"
+        if colorValue == "SeaShell" then colorValue = "#FFF5EE"
+        if colorValue == "Beige" then colorValue = "#F5F5DC"                                					
+        if colorValue == "OldLace" then colorValue = "#FDF5E6"
+        if colorValue == "FloralWhite" then colorValue = "#FFFAF0"
+        if colorValue == "Ivory" then colorValue = "#FFFFF0"
+        if colorValue == "AntiqueWhite" then colorValue = "#FAEBD7"
+        if colorValue == "Linen" then colorValue = "#FAF0E6"
+        if colorValue == "LavenderBlush" then colorValue = "#FFF0F5"        
+        if colorValue == "MistyRose" then colorValue = "#FFE4E1"
+        //*****************************************************
+        // Grey HEX Codes
+        //*****************************************************	
+        if colorValue == "Gainsboro" then colorValue = "#DCDCDC"
+        if colorValue == "LightGrey" then colorValue = "#D3D3D3"
+        if colorValue == "Silver" then colorValue = "#C0C0C0"
+        if colorValue == "DarkGrey" then colorValue = "#A9A9A9"
+        if colorValue == "Grey" then colorValue = "#808080"        
+        if colorValue == "DimGrey" then colorValue = "#696969"
+        if colorValue == "LightSlateGray" then colorValue = "#778899"
+        if colorValue == "SlateGrey" then colorValue = "#708090"
+        if colorValue == "DarkSlateGrey" then colorValue = "#2F4F4F"
+        if colorValue == "Black" then colorValue = "#000000"
+        //*****************************************************                                      					   	
+        //return "<color=" + char(34) + colorValue + char(34) + ">" + self + "</color>"
+        return "<color=" + colorValue + ">" + self + "</color>"
+    end function
+
+    // Look for a file
+    // @description **Description:**
+    // @description Check to see if the specified file exists
+    // @description ---
+    //
+    // @description **Parameters:**
+    // @param {string} filePath
+    // @description - `filePath`:`<string>`
+    // @param {string} `fileName`:`<string>`
+    // @description - `fileName`:`<string>`
+    //
+    // @description **Parameter Defaults:**
+    // @description - `none`
+    //
+    // @description **Return:**
+    // @return {boolean}
+    // @description `boolean`:`true`|`false`
+    // @description ---
+    //    
+    // @description **Author:** Svarii
+    // @description **Version:** 0.0.1
+    // @description ---
+    //
+    // @description ***footnotes***   
+    // @description Parameters are not checked for validity   
+    // @description ---        
+    //
+    // @example
+    // file_exists("/DatabaseDir", "addressData.db") // return true if found, otherwise false
+    // @description ---  		
+        file_exists = function(filePath, fileName)
+            locals.hostComputer = get_shell.host_computer
+            locals.fileLocation = locals.filePath + "/" + locals.fileName
+            locals.fileObj = locals.hostComputer.File(locals.fileLocation)
+            if not locals.fileObj then
+                return false
+            else
+                return true
+            end if		
+        end function
+
+// Generate currentStatus Object
+	// @description **Description:**
+	// Generate an object that contains basic environment information
+	// @description ---
+	//
+	// @description **Parameters:**
+	// @description - none 
+	// @description ---
+	//
+	// @description **Return:**
+	// @return {map<string,maps>} - System Object {.shell and .computer}
+	// @description `computerStatus`:`<maps><string>` currentStatus Object
+	// @description - `.compInfo` - computerInformation Object
+	// @description - - `.name`
+	// @description - - `.home`
+	// @description - - `.location`
+	// @description - - `.path`	
+	// @description - - `.user`	
+	// @description - - `.has_internet`
+	// @description - `.ipInfo` - ipInformation Object
+	// @description - - `.local`
+	// @description - - `.public`
+	// @description - - `.gateway`	
+	// @description ---   
+	//    
+	//  @example iScan = new id_self
+	//  @example print typeof(iScan)  //Output: currentStatus
+	//  @example 
+	//  @example	print iScan.compInfo.name  //Output: The name of the computer
+	//  @example	print iScan.compInfo.has_internet  //Output: boolean 1 or 0
+	//  @example	print iScan.ipInfo.public  //Output: public ip of computer
+id_self = function()
+	locals.localComputer = get_shell.host_computer
+        if not typeof(locals.localComputer) == "computer" then return "Failed to fetch local computer object."
+        if locals.localComputer.is_network_active then
+	        locals.localRouter = get_router
+            if not typeof(locals.localRouter) == "router" then return "Failed to fetch local router object."		
+        end if
+    locals.ipInformation = {"classID": "ipInformation", "local": locals.localComputer.local_ip, "public": locals.localComputer.public_ip, "gateway":locals.localComputer.network_gateway}
+    locals.ipScan = locals.ipInformation        
+	locals.ComputerInformation = {"classID": "computerInformation","name":locals.localComputer.get_name, "home":home_dir, "location":program_path, "path":current_path, "user":active_user, "has_internet":locals.localComputer.is_network_active, "active_net_card":locals.localComputer.active_net_card, "wifi_networks":locals.localComputer.wifi_networks("wlan0")}
+	locals.computerInfo = locals.ComputerInformation
+	locals.currentStatus = {"classID":"currentStatus", "ipInfo":locals.ipScan, "compInfo":locals.computerInfo}
+	locals.currentStatus.classID = "currentStatus"
+	return locals.currentStatus
+end function
+	// @startuml
+	// title <color:purple>currentStatus Class Diagram</color>
+	// 
+	// class currentStatus {
+	//   .. <color:blue>.compInfo</color> ..
+	//   + .name : string
+	//   + .home : string
+	//   + .location : string
+	//   + .path : string
+	//   + .user : string
+	//   + .has_internet : boolean
+	// 
+	//   .. <color:blue>.ipInfo</color> ..
+	//   + local : string
+	//   + public : string
+	//   + gateway : string
+	// }
+	// 
+	// note right of currentStatus
+	//   * Pulls basic information
+	//      on the immediate environment
+	//   * Populates currentStatus Object
+	// end note
+	// 
+	// @enduml
