@@ -3,11 +3,7 @@
 ## Install Instructions
 
 ### 1. Install the application  
-Place the AirLink program inside the following directory:
-
-```
-/opt/airlink
-```
+Compile the AirLink program inside the following directory structure:
 
 ### 2. Directory Structure
 
@@ -27,7 +23,7 @@ Place the AirLink program inside the following directory:
 ```
 
 ### 3. Create System Symlink  
-After installation or compilation, create a global command link:
+After compilation, create a sym link:
 
 ```
 sudo ln /opt/airlink/bin/airlink /bin/airlink
