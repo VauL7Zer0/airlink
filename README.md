@@ -16,7 +16,7 @@ Compile the AirLink program inside the following directory structure:
 └── etc
     └── airlink.conf
 
-/home/{username}/Config/Airlink/Theme
+/home/{username}/Airlink/Theme
 ├── hacker.ini
 ├── rust.ini
 └── anime.ini
