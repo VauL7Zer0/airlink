@@ -28,6 +28,7 @@
     end if
 // Declare Variables
     outputBuffer = []
+    themeList = []
 	myShell = get_shell
 	myComputer = myShell.host_computer
 	lastIP = myComputer.public_ip
@@ -380,19 +381,23 @@
             ux_layer_1[9] = ("Select Option      [RightArrow]").color(defaultTextColor).pos("2em")
             ux_layer_1[10] = ("Open Password File [Insert] Open Theme File").color(defaultTextColor).pos("2em")
             ux_layer_1[12] = ("Browser IP Address [Home]").color(defaultTextColor).pos("2em")
-            
         else if showThemeList == true then
-            themeList = myComputer.File(home_dir + "/Airlink/Theme").get_files
-            for i in range(themeScrollOffset, themeScrollOffset + windowSize - 1)
-                if i >= themeList.len then break
-                themeName = themeList[i]
-                displaySlot = (i - themeScrollOffset) + 2
-                if i == themeIndexSelection then
-                    ux_layer_1[displaySlot] = (themeName.name).mark(selectionHighlightColor).pos("2em")
-                else
-                    ux_layer_1[displaySlot] = (themeName.name).pos("2em")
-                end if
-            end for
+            themeDirectory = myComputer.File(home_dir + "/Airlink/Theme")
+            if typeof(themeDirectory) == "file" then
+                themeList = themeDirectory.get_files
+            end if
+            if themeList.len > 0 then
+                for i in range(themeScrollOffset, themeScrollOffset + windowSize - 1)
+                    if i >= themeList.len then break
+                    themeName = themeList[i]
+                    displaySlot = (i - themeScrollOffset) + 2
+                    if i == themeIndexSelection then
+                        ux_layer_1[displaySlot] = (themeName.name).mark(selectionHighlightColor).pos("2em")
+                    else
+                        ux_layer_1[displaySlot] = (themeName.name).pos("2em")
+                    end if
+                end for
+            end if
         else if not typeof(getBroadcasts) == "list" then
             ux_layer_1[2] = ("Interface " + network_device_list[interfaceSelection][0] + " failed".color(failColor)).pos("2em")
             ux_layer_1[3] = ((network_device_list[interfaceSelection][0] + " is not a wireless device").pos("2em"))
@@ -561,6 +566,7 @@
 					if Crypto.airmon("start", network_device_list[interfaceSelection][0]) == 1 then						
 						outputBuffer.push(((borderCharacter1*61).color(borderCharacter1Color).pos(leftBorder)) + ("Getting " + str(get_acks(to_int(targetWifiParts[1].remove("%")))).bold.color(ackInfoColor) + " ACKS from " + targetWifiParts[2].bold.color	(ackInfoColor) + " with " + targetWifiParts[1].bold.color(ackInfoColor)).color(defaultTextColor).pos(str(poz) + "em") + " signal")
 							//startSniff = time
+
 							Crypto.aireplay(targetWifiParts[0], targetWifiParts[2], get_acks(to_int(targetWifiParts[1].remove("%"))))
 							lastPassword = Crypto.aircrack(current_path + "/" + "file.cap")
 							myComputer.File(current_path + "/" + "file.cap").delete
