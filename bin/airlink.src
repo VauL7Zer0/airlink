@@ -40,10 +40,12 @@
 	windowSize = 6
     themeIndexSelection = 0
     refreshTimer = time
+    hopConnections = false
 	showHelp = false
     showThemeList = false
     playerDatabaseDir = null
     wifiDatabaseFilename = null
+    lastHopTime = time
     // Specify Wifi Information Database File Location
         // Load config file data
             airlinkConfigFile = myComputer.File("/opt/airlink/etc/airlink.conf")
@@ -293,7 +295,14 @@
 			else if showThemeList == true then
 				showThemeList = false
 			end if
-		end if        
+		end if
+        if userInput == "F9" then
+			if hopConnections == false then
+				hopConnections = true
+			else if hopConnections == true then
+				hopConnections = false
+			end if            
+        end if
 		if userInput == "Home" then
 			myShell.launch("/usr/bin/Browser.exe", publicRouter.public_ip + ":80")
 		end if        
@@ -350,6 +359,23 @@
             getBroadcasts = get_shell.host_computer.wifi_networks(network_device_list[interfaceSelection][0])
             refreshTimer = time
         end if
+        if hopConnections == true then
+            hopIn = floor(30 - (time % 30))
+            if hopIn == 0 then
+                if not lastHopTime < floor(time - 30) then
+                    wifiIndex = (getBroadcasts.len).random_from
+                    lastHopTime = time
+                end if
+                hopIn = -1
+            end if
+            if hopIn == -1 then
+                wait(0.1)
+                userInput = "RightArrow"
+            end if
+        end if
+
+
+
         ux_layer_1[1] = ((("Signal").underline.pos(str(poz) + "em") + ("eSSID").underline.pos(str(poy) + "em") + ("bSSID / Public IP").underline.pos(str(pox) + "em")).color(defaultTextColor))
 
         // Ensure wifiIndex stays within valid bounds
