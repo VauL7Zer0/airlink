@@ -1,36 +1,32 @@
-# AirLink Installation Guide
+# :signal_strength: Airlink
+> A terminal-based UX designed for cracking detected Wi-Fi broadcasts.
+### :sparkles: Features
+* **Zero Typing:** Navigate menus seamlessly using arrow keys and function keys.
+* **Password Vault:** Store and manage cracked Wi-Fi passwords locally.
+* **Custom Themes:** Personalize your terminal appearance.
+* **Network Insights & WHOIS:** Display router details, contact/domain info, and WHOIS data for connected networks.
+* **Live Telemetry:** Real-time status monitors for cryptoLib, active connections, re-scan timers, and interface states.
+* **Quick Access:** Open configuration files instantly with hotkeys.
+### :link: Links & Resources
+* **GitHub Repository:** [VauL7Zer0/airlink](https://github.com/VauL7Zer0/airlink)
+* **Installation Video:** [YouTube Tutorial](https://youtu.be/5Ibom81Zdms)
 
-## Install Instructions
+## 🔨: Installation Guide
+### Step 1: Directory Structure & Binaries
+Set up your directory paths and place the compiled binaries in their respective locations:
 
-### 1. Install the application  
-Compile the AirLink program inside the following directory structure:
+/opt/airlink/
 
-### 2. Directory Structure
+├── bin/airlink            # Main executable
 
-```
-/opt/airlink
-├── bin
-│   └── airlink
-├── lib
-│   └── libAirlink.so
-└── etc
-    └── airlink.conf
+├── lib/libAirlink.so      # Shared library dependency
 
-/home/{username}/Airlink/Theme
-├── hacker.ini
+└── etc/airlink.conf       # Configuration file
+
+/home/{username}/Airlink/Theme/
+
+├── hacker.ini             # Theme presets
+
 ├── rust.ini
+
 └── anime.ini
-```
-
-### 3. Create System Symlink  
-After compilation, create a sym link:
-
-```
-sudo ln /opt/airlink/bin/airlink /bin/airlink
-```
-
-This allows the user to run AirLink from anywhere using:
-
-```
-airlink
-```
