@@ -7,6 +7,7 @@
 * **Network Insights & WHOIS:** Display router details, contact/domain info, and WHOIS data for connected networks.
 * **Live Telemetry:** Real-time status monitors for cryptoLib, active connections, re-scan timers, and interface states.
 * **Quick Access:** Open configuration files instantly with hotkeys.
+* **Size Defaulted:** Configured to fit inside the default terminal window scale
 ### :link: Links & Resources
 * **GitHub Repository:** [VauL7Zer0/airlink](https://github.com/VauL7Zer0/airlink)
 * **Installation Video:** [YouTube Tutorial](https://youtu.be/5Ibom81Zdms)
