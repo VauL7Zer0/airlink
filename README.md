@@ -30,3 +30,8 @@ Set up your directory paths and place the compiled binaries in their respective 
 ├── rust.ini
 
 └── anime.ini
+## Built With
+### GreyScript Prime
+AirLink uses the GreyScript Prime library for extended scripting utilities, helper functions, and improved workflow capabilities within Grey Hack.
+GitHub: https://github.com/Svarii/greyscript-prime
+
