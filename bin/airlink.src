@@ -9,6 +9,7 @@
         import_code("/opt/airlink/lib/libHelp.so")
     // Load Graphics
         import_code("/opt/airlink/lib/libGraphics.so")
+        blackListTag = "X"
     // Specify Wifi Information Database File Location
             // Load config file data
                 airlinkConfigFile = myComputer.File("/opt/airlink/etc/airlink.conf")
@@ -35,9 +36,12 @@
         wifiInfo_fileLocation = playerDatabaseDir + "/" + wifiDatabaseFilename
 
     // Load Router if there is internet connection
+        routerWhois = {}
         if isOnline then
             myRouter = get_router
-            routerWhois = fetch_whois(myRouter.public_ip)
+            if not myComputer.public_ip == lastIP or not routerWhois then
+                routerWhois = fetch_whois(myRouter.public_ip)
+            end if
         end if
     // Check for Airlink Dir
         if not is_folder(myComputer.File(home_dir + "/Airlink")) then
@@ -138,7 +142,7 @@
             ux_layer_1[4] = ("Exit the Program".color(themeData.helpMenuItemColor).pos("2em") + "[ESC]".color(themeData.helpMenuKeyColor).pos("22em"))
             ux_layer_1[5] = ("Cycle Adaptor".color(themeData.helpMenuItemColor).pos("2em") + "[TAB]".color(themeData.helpMenuKeyColor).pos("22em"))
             ux_layer_1[6] = ("Scroll Up".color(themeData.helpMenuItemColor).pos("2em") + "[UpArrow]".color(themeData.helpMenuKeyColor).pos("22em"))
-            ux_layer_1[7] = ("Scroll Down".color(themeData.helpMenuItemColor).pos("2em") + "[DownArrow".color(themeData.helpMenuKeyColor).pos("22em"))
+            ux_layer_1[7] = ("Scroll Down".color(themeData.helpMenuItemColor).pos("2em") + "[DownArrow]".color(themeData.helpMenuKeyColor).pos("22em"))
             ux_layer_1[9] = ("Select Option".color(themeData.helpMenuItemColor).pos("2em") + "[RightArrow]".color(themeData.helpMenuKeyColor).pos("22em"))
             ux_layer_1[10] = (("Open Password/Theme File ".color(themeData.helpMenuItemColor).pos("2em") + "[Insert]".color(themeData.helpMenuKeyColor).pos("22em")))
             ux_layer_1[12] = ("Browser IP Address".color(themeData.helpMenuItemColor).pos("2em") +  "[Home]".color(themeData.helpMenuKeyColor).pos("22em"))
@@ -172,6 +176,7 @@
             endIdx = scrollOffset + windowSize - 1
             if endIdx >= getBroadcasts.len then endIdx = getBroadcasts.len - 1            
         //Loop through visible window
+            onBlacklist = false
             for ssid in range(scrollOffset, endIdx)
                 if not getBroadcasts.hasIndex(ssid) then continue
                 ssidParts = split(getBroadcasts[ssid], " ")
@@ -190,6 +195,11 @@
                 if to_int(ssidParts[1].remove("%")) == 100 then
                     signalBar = themeData.maxBar.color(themeData.signalColor11)
                 end if
+                if ssidParts.hasIndex(4) then
+                    if ssidParts[4].trim == "blacklist" then
+                        onBlacklist = true
+                    end if
+                end if
                 if hasInternet == true then
                     if typeof(myRouter) == "router" then
                         if myRouter.bssid_name == ssidParts[0] then ssidParts[0] = myRouter.public_ip.color(themeData.ipAddressColor).bold
@@ -204,10 +214,12 @@
                         markerTag = themeData.tag1.color(themeData.tag1Color0)
                         shadowPart = wifi.split(" ")
                         if typeof(shadowPart) == "list" and shadowPart.len > 0 then
-                            if shadowPart[2].trim == ssidParts[2].trim then
-                                knownPass = shadowPart[3]
-                                markerTag = themeData.tag2.color(themeData.tag2Color1)
-                                break
+                            if shadowPart.hasIndex(2) then
+                                if shadowPart[2].trim == ssidParts[2].trim then
+                                    knownPass = shadowPart[3]
+                                    markerTag = themeData.tag2.color(themeData.tag2Color1)
+                                    break
+                                end if
                             end if
                         end if
                     end for
@@ -235,11 +247,16 @@
                 end if
                 // Display the visible items
                     displayLineIndex = (ssid - scrollOffset) + 2
-                    ux_layer_1[displayLineIndex] = (markerTag.pos(str(themeData.pow) + "em") + (signalBar).pos(str(themeData.pov) + "em") + (ssidParts[1]).pos(str(themeData.poz) + "em") + ssidParts[2].pos(str(themeData.poy) + "em") + ssidParts[0].pos(str(themeData.pox) + "em"))
+
+                    if onBlacklist == false then
+                        ux_layer_1[displayLineIndex] = (markerTag.pos(str(themeData.pow) + "em") + (signalBar).pos(str(themeData.pov) + "em") + (ssidParts[1]).pos(str(themeData.poz) + "em") + ssidParts[2].pos(str(themeData.poy) + "em") + ssidParts[0].pos(str(themeData.pox) + "em"))
+                    else if onBlacklist == true then
+                        ux_layer_1[displayLineIndex] = (blackListTag.pos(str(themeData.pow) + "em") + (signalBar).pos(str(themeData.pov) + "em") + (ssidParts[1]).pos(str(themeData.poz) + "em") + ssidParts[2].pos(str(themeData.poy) + "em") + ssidParts[0].pos(str(themeData.pox) + "em"))
+                    end if
 
                     if hasInternet == true then
-                        ux_layer_1[9] = (routerWhois.admin.pos("2em") + routerWhois.domain.pos("18em")).color(themeData.ipAddressColor)
-                        ux_layer_1[10] = (routerWhois.email.pos("2em") + routerWhois.phone.pos("18em")).color(themeData.ipAddressColor)
+                        ux_layer_1[9] = (routerWhois.admin.color(themeData.failColor).pos("2em") + routerWhois.domain.color(themeData.failColor).pos("16em") + ("Devices: ".color(themeData.defaultTextColor) + str((myRouter.devices_lan_ip).len).color(themeData.ipAddressColor)).pos("29em"))
+                        ux_layer_1[10] = (routerWhois.email.color(themeData.passColor).pos("2em") + routerWhois.phone.color(themeData.passColor).pos("16em") + ("Ports  : ".color(themeData.defaultTextColor) + str((myRouter.used_ports).len).color(themeData.ipAddressColor)).pos("29em"))
                     end if
                     
                     if wifiIndex == ssid then
@@ -307,9 +324,11 @@
                             if shadowContent.len > 0 then
                                 for wifi in shadowList
                                     shadowPart = wifi.split(" ")
-                                    if shadowPart[2].trim == targetWifiParts[2].trim then
-                                        hasEntry = true
-                                        break
+                                    if shadowPart.hasIndex(2) then
+                                        if shadowPart[2].trim == targetWifiParts[2].trim then
+                                            hasEntry = true
+                                            break
+                                        end if
                                     end if
                                 end for
                             end if
@@ -356,7 +375,7 @@
                 print(line, true)
             end for
             outputBuffer = []
-            wait(0.1)
+            wait(0.05)
             knownPass = "unknown"
             end while
 
