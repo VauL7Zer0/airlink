@@ -1,0 +1,64 @@
+//Theme Settings
+    //General Text
+        defaultTextColor = "WhiteSmoke"
+        ipAddressColor = "DeepPink"
+        selectionHighlightColor = "#B0C4DE2C"
+        ackInfoColor = "Cyan"          
+    //Help Menu
+        helpMenuItemColor = "LightSkyBlue"
+        helpMenuKeyColor = "Yellow"
+    //Set Internal Default Theme
+        borderCharacter1 = "█"//.alpha("#2C")
+        borderCharacter2 = "░"//.alpha("#2C")	
+        borderCharacter3 = "▓"//.alpha("#2C")
+        borderCharacter1Color = "WhiteSmoke"
+        borderCharacter2Color = "WhiteSmoke"
+        borderCharacter3Color = "WhiteSmoke"
+    //Signal Image
+        noBar = "     "
+        lowBar  = "▁    "
+        medBar  = "▂▃  "
+        highBar = "▃▄▅ "
+        maxBar  = "▄▅▇█"
+    //Signal Image Colors
+        signalColor0 = "Crimson"
+        signalColor1 = "FireBrick"
+        signalColor2 = "DarkRed"
+        signalColor3 = "OrangeRed"
+        signalColor4 = "DarkOrange"
+        signalColor5 = "Gold"
+        signalColor6 = "Khaki"
+        signalColor7 = "YellowGreen"
+        signalColor8 = "Chartreuse"
+        signalColor9 = "Green"
+        signalColor10 = "LimeGreen"
+        signalColor11 = "Lime"            
+    //Flag Color
+        passColor = "LimeGreen"
+        failColor = "Red"
+    //Signal Status Icon
+        tag1 = "○"
+        tag2 = "●"
+    //Signal Status Icon Colors
+        tag1Color0 = "#00FF33"
+        tag2Color0 = "#FFB000"
+        tag2Color1 = "#00FF33"
+        tag2Color2 = "#00AA22"
+    //Advanced Settings
+        //Column Position
+            // Signal Percentage
+                poz = 2
+            // essid
+                poy = 8
+            //bssid
+                pox = 22
+            //status dot
+                pow = 1
+            //signal bar 
+                pov = 5
+
+        //Border Posistion
+            leftBorder = "0em"
+            rightBorder = "36em"
+            
+         
