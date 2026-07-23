@@ -55,4 +55,60 @@
                 wifiIndex = wifiIndex + 1
                 if wifiIndex > getBroadcasts.len - 1 then wifiIndex = (getBroadcasts.len - 1)
             end if
-		end if	
+		end if
+
+        if userInput == "F3" then
+            sortedBroadcasts = []
+            for broadcast in getBroadcasts
+                parts = broadcast.split(" ")
+                signalStrength = to_int(parts[1].remove("%"))
+                sortedBroadcasts.push({"bssid": parts[0], "signalStrength": signalStrength, "essid": parts[2]})
+            end for
+            sortedBroadcasts.sort("signalStrength")
+            sortedBroadcasts.reverse
+			autoCrackLog = ["Cracking All WiFi Broadcasts. CTRL+C to Interrupt.".color("LimeGreen").bold.underline.color("LightGreen")]
+            for signal in sortedBroadcasts
+                hasEntry = false
+                if shadowContent.len > 0 then
+                    for wifi in shadowList
+                        shadowPart = wifi.split(" ")
+						if shadowPart.hasIndex(2) then
+							if shadowPart[2].trim == signal.essid.trim then
+								hasEntry = true
+								break
+							end if
+						end if
+                    end for
+                end if
+                // Crack if not in database
+                if not hasEntry then
+					clear_screen
+					reqAcks = get_acks(signal.signalStrength)
+					if autoCrackLog.len > 0 then
+						for autolog in autoCrackLog
+							print(autolog, true)
+						end for
+					end if
+                    print("Monitoring: " + (signal.essid).color(themeData.ipAddressColor) + " (" + signal.signalStrength + "%)" + " Getting ACKs: " + str(reqAcks).color(themeData.ackInfoColor), true)
+                    Crypto.aireplay(signal.bssid, signal.essid, reqAcks)
+                    crackedPassword = Crypto.aircrack(current_path + "/file.cap")                    
+                    if typeof(crackedPassword) == "string" then
+						autoCrackLog.push(("◆ Cracked ".bold.color(themeData.passColor) + (signal.essid).color(themeData.ipAddressColor) + " Password: " + crackedPassword).underline)
+                        capFile = myComputer.File(current_path + "/file.cap")
+                        if capFile then capFile.delete
+                        
+                        newEntry = signal.bssid + " " + signal.signalStrength + "% " + signal.essid + " " + crackedPassword
+                        if shadowContent then
+                            shadowContent = shadowContent + char(10) + newEntry
+                        else
+                            shadowContent = newEntry
+                        end if
+                        
+                        shadowFile.set_content(shadowContent)
+                        shadowList = (shadowContent.split(char(10))).crop
+                        lastPassword = crackedPassword
+                        lastNetwork = signal.essid
+                    end if
+                end if
+            end for
+        end if		
