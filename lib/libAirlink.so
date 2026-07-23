@@ -1384,5 +1384,3 @@ end function
             ux_layer_0.push((borderCharacter2*61).color(borderCharacter2Color).pos(leftBorder))
             return ux_layer_0
         end function
-
-        
