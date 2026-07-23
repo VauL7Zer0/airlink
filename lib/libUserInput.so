@@ -89,7 +89,7 @@
 							print(autolog, true)
 						end for
 					end if
-                    print("Monitoring: " + (signal.essid).color(themeData.ipAddressColor) + " (" + signal.signalStrength + "%)" + " Getting ACKs: " + str(reqAcks).color(themeData.ackInfoColor), true)
+                    print("◆ Monitoring: ".color(themeData.signalColor5) + (signal.essid).color(themeData.ipAddressColor) + " (" + signal.signalStrength + "%)" + " Getting ACKs: " + str(reqAcks).color(themeData.ackInfoColor), true)
                     Crypto.aireplay(signal.bssid, signal.essid, reqAcks)
                     crackedPassword = Crypto.aircrack(current_path + "/file.cap")                    
                     if typeof(crackedPassword) == "string" then
@@ -97,7 +97,7 @@
                         capFile = myComputer.File(current_path + "/file.cap")
                         if capFile then capFile.delete
                         
-                        newEntry = signal.bssid + " " + signal.signalStrength + "% " + signal.essid + " " + crackedPassword
+                        newEntry = signal.bssid + " " + signal.signalStrength + "% " + signal.essid + " " + crackedPassword + " whitelist " + myComputer.public_ip
                         if shadowContent then
                             shadowContent = shadowContent + char(10) + newEntry
                         else
