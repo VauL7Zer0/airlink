@@ -37,10 +37,18 @@ AirLink uses the GreyScript Prime library for extended scripting utilities, help
 GitHub: https://github.com/Svarii/greyscript-prime
 
 ## Screenshots
-<img width="672" height="427" alt="Screenshot 2026-07-20 020623" src="https://github.com/user-attachments/assets/1d09a7f9-5f52-4608-ab29-13e37bb92201" />
-<img width="676" height="427" alt="Screenshot 2026-07-20 020612" src="https://github.com/user-attachments/assets/d9831672-343f-4e3d-a9d1-ab64bbab3e06" />
-<img width="678" height="430" alt="Screenshot 2026-07-20 020600" src="https://github.com/user-attachments/assets/dcd9dccd-33fd-465d-a60d-8802e142803a" />
-<img width="677" height="437" alt="Screenshot 2026-07-20 020540" src="https://github.com/user-attachments/assets/f86f3a2c-4df8-47c2-ab61-1d7eb1f4ab46" />
+<img width="50%" height="50%" alt="Screenshot 2026-07-22 223137" src="https://github.com/user-attachments/assets/75972e40-1c5f-47b6-9b52-535ab7636740" /><img width="50%" height="50%" alt="Screenshot 2026-07-22 223127" src="https://github.com/user-attachments/assets/ca3a036d-0b1f-4311-a0f0-41f3480a6d93" />
+<img width="50%" height="50%" alt="Screenshot 2026-07-22 223110" src="https://github.com/user-attachments/assets/0b703070-b4d8-4f73-867c-758170efb426" /><img width="50%" height="50%" alt="Screenshot 2026-07-22 223101" src="https://github.com/user-attachments/assets/9abb6a5c-aab9-44f8-b019-4e91cc4311d9" />
+<img width="50%" height="50%" alt="Screenshot 2026-07-22 223050" src="https://github.com/user-attachments/assets/96c6f1ef-a986-4d29-8508-1a82971ace99" /><img width="50%" height="50%" alt="Screenshot 2026-07-22 223034" src="https://github.com/user-attachments/assets/03da4ca4-c8d4-4feb-b3ec-03feaa11d5af" />
+<img width="50%" height="50%" alt="Screenshot 2026-07-23 003807" src="https://github.com/user-attachments/assets/3c690db3-f119-4b54-8c96-f3a9abca512c" /><img width="50%" height="50%" alt="Screenshot 2026-07-23 003940" src="https://github.com/user-attachments/assets/9020440d-0b77-4d71-8a94-50d6d2dc729c" />
+
+
+
+
+
+
+
+
 
 
 
