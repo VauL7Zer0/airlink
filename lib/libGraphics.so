@@ -19,4 +19,4 @@ if locals.imageList == null then locals.imageList = [" ", "▂", "▄", "▅", "
             end if
         end for
     return floatParts.join("")
-end function   
+end function
