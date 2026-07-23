@@ -1,0 +1,58 @@
+		userInput = poll_input
+        if userInput and not userInput == "F1" then
+            showHelp = false
+        end if
+		if userInput == "F1" then
+			if showHelp == false then
+				showHelp = true
+			else if showHelp == true then
+				showHelp = false
+			end if
+		end if        
+		if userInput == "F2" then
+			if showThemeList == false then
+				showThemeList = true
+			else if showThemeList == true then
+				showThemeList = false
+			end if
+		end if
+        if userInput == "F9" then
+			if hopConnections == false then
+				hopConnections = true
+			else if hopConnections == true then
+				hopConnections = false
+			end if            
+        end if
+		if userInput == "Home" then
+			myShell.launch("/usr/bin/Browser.exe", myRouter.public_ip + ":80")
+		end if        
+		if userInput == "Insert" then
+            if showThemeList == true then                    
+                myShell.launch("/usr/bin/Notepad.exe", home_dir + "/Airlink/Theme/" + themeList[themeIndexSelection].name)
+            else
+			    myShell.launch("/usr/bin/Notepad.exe", wifiInfo_fileLocation)
+            end if
+		end if
+		if userInput == "Tab" then
+			interfaceSelection = interfaceSelection + 1
+			if interfaceSelection > network_device_list.len - 1 then interfaceSelection = 0
+		end if
+		if userInput == "UpArrow" then
+            if showThemeList == true then
+                themeIndexSelection = themeIndexSelection - 1
+                if themeIndexSelection < -2 then themeIndexSelection = -2
+            else
+                wifiIndex = wifiIndex - 1
+                if wifiIndex < 0 then wifiIndex = 0
+            end if
+		end if
+		if userInput == "DownArrow" then
+            if showThemeList == true then
+                themeIndexSelection = themeIndexSelection + 1
+                themeCount = (myComputer.File(home_dir + "/Airlink/Theme").get_files).len
+                if themeIndexSelection > (themeCount - 1) then themeIndexSelection = (themeCount - 1)
+            else
+                wifiIndex = wifiIndex + 1
+                if wifiIndex > getBroadcasts.len - 1 then wifiIndex = (getBroadcasts.len - 1)
+            end if
+		end if	
