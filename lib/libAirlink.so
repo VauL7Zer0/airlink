@@ -1,4 +1,36 @@
 // @startuml
+// title number.random_from(min=0)
+//
+// participant Caller
+// participant number
+//
+// Caller -> number: call random_from(min=0)
+// activate number
+//
+// note right: locals.max = self
+// note right: locals.min = min (default 0)
+//
+// number --> number: calculate random number\nfloor((rnd * (locals.max - locals.min + 1)) + locals.min)
+// number --> Caller: return random number
+// deactivate number
+// @enduml
+
+
+//  **Description:**
+        //  Generate a random number from 0 to number, or from optional minimum to number
+        //  @param {number} [min]
+        //  @return {number} - The result of the subtraction.
+        //  @example myNumber = 100;
+        //  @example 
+        //  @example result = myNumber.random_from(50);
+        //  @example
+        //  print(result); // Output: A random number between 50 and 100
+    number.random_from = function(min = 0)
+            locals.max = self
+            return floor((rnd * (locals.max - locals.min + 1)) + locals.min)  
+    end function
+
+// @startuml
 // title <color:purple>fetch_whois Function Overview</color>
 //
 // class fetch_whois {
@@ -773,7 +805,46 @@ end function
         return "<b>" + self + "</b>"
     end function  
 
-
+// Applies color tag to the string
+	// @description **Description:**
+	// @description Modifies a text string by wrapping it within the color tag
+	// @description ---
+	//
+	// @description **Parameters:**
+	// @param {string} colorValue 
+	// @description - `colorValue` The desired color in `#RRGGBB` / `#RRGGBBAA` / `#HEXA` format
+	//
+	// @description **Return:**
+	// @return {string}
+	// @description `string` the string value embedded in the `<color>` tag
+	// @description ---
+	//
+	// @description **Links:**
+	// @description - [Text Mesh Pro: Rich Color Text](https://docs.unity3d.com/Packages/com.unity.textmeshpro@4.0/manual/RichTextColor.html)	
+	// @description - [HTML Color Names: Supported Name List](https://htmlcolorcodes.com/color-names/)
+	// @description ---	
+	//
+	// @description **Author:** Svarii
+	// @description **Version:** 0.0.1
+	// @description ---
+	//
+	// @description ***footnotes***
+	// @description Color names are case sensitive
+	// @description ---
+	//
+	// @example newString = "Hello"   
+	// @example 
+	// @example result = newString.color("blue")
+	// @example     
+	// print(result); // Outputs: <color=blue>Hello</color>
+	// @example        
+	// @example result = newString.color("#FFFFFF")
+	// @example   
+	// print(result); // Outputs: <color=#FFFFFF>Hello</color>
+	// @example        
+	// @example result = newString.color("Aquamarine")
+	// @example   
+	// print(result); // Outputs: <color=#7FFFD4>Hello</color>
     string.color = function(colorValue)
         if not typeof(colorValue) == "string" then return self
         //*****************************************************
@@ -1063,3 +1134,214 @@ end function
 	// end note
 	// 
 	// @enduml
+
+
+
+
+
+
+
+
+    load_theme = function(themefile = "default.ini")
+            //Make a class file for all the local theme data so it can be properly returned as a class object
+        locals.themeData = {
+            "classID": "",
+            "leftBorder": "",
+            "rightBorder": "",
+            "defaultTextColor": "",
+            "alphaSetting": "",
+            "borderCharacter1": "",
+            "borderCharacter1Color": "",
+            "borderCharacter2": "",
+            "borderCharacter2Color": "",
+            "borderCharacter3": "",
+            "borderCharacter3Color": "",
+            "noBar": "     ",
+            "lowBar": "▁    ",
+            "medBar": "▂▃  ",
+            "highBar": "▃▄▅ ",
+            "maxBar": "▄▅▇█",
+            "failColor": "",
+            "passColor": "",
+            "poz": "",
+            "poy": "",
+            "pox": "",
+            "pow": "",
+            "pov": "",
+            "iti1": "",
+            "iti2": "",
+            "iti3": "",
+            "iti4": "",
+            "iti5": "",
+            "iti6": "",
+            "tag1": "",
+            "tag2": "",
+            "tag1Color0": "",
+            "tag2Color0": "",
+            "tag2Color1": "",
+            "tag2Color2": "",
+            "signalColor0": "",
+            "signalColor1": "",
+            "signalColor2": "",
+            "signalColor3": "",
+            "signalColor4": "",
+            "signalColor5": "",
+            "signalColor6": "",
+            "signalColor7": "",
+            "signalColor8": "",
+            "signalColor9": "",
+            "signalColor10": "",
+            "signalColor11": "",
+            "ipAddressColor": "",
+            "defaultTextColor": "",
+            "selectionHighlightColor": "",
+            "helpMenuItemColor": "",
+            "helpMenuKeyColor": "",
+            "loadColors":"WhiteSmoke,Red,Orange,Yellow,Green,LimeGreen",
+            "loadShapes":"▖,▗,▘,▚,▝,▞"}
+            airlinkThemeContent = null
+            airlinkThemeList = null
+            locals.airlinkThemeFile = globals.myComputer.File(home_dir + "/Airlink/Theme/" + locals.themefile)
+            if typeof(locals.airlinkThemeFile) == "file" then
+                locals.airlinkThemeContent = locals.airlinkThemeFile.get_content
+            end if
+            if typeof(locals.airlinkThemeContent) == "string" then
+                locals.airlinkThemeList = locals.airlinkThemeContent.split(char(10))
+            end if
+            for airlinkThemeItem in locals.airlinkThemeList
+                locals.airlinkThemeItemPart = locals.airlinkThemeItem.split(":")
+                //playerDatabaseDir
+                if locals.airlinkThemeItemPart[0] == "leftBorder" then
+                    locals.themeData.leftBorder = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "rightBorder" then
+                    locals.themeData.rightBorder = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter1" then
+                    locals.themeData.borderCharacter1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter1Color" then
+                    locals.themeData.borderCharacter1Color = locals.airlinkThemeItemPart[1]                 
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter2" then
+                    locals.themeData.borderCharacter2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter2Color" then
+                    locals.themeData.borderCharacter2Color = locals.airlinkThemeItemPart[1]    
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter3" then
+                    locals.themeData.borderCharacter3 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter3Color" then
+                    locals.themeData.borderCharacter3Color = locals.airlinkThemeItemPart[1]    
+                else if locals.airlinkThemeItemPart[0] == "loadShapes" then
+                    locals.themeData.loadShapes = locals.airlinkThemeItemPart[1].split(",")
+                else if locals.airlinkThemeItemPart[0] == "loadColors" then
+                    locals.themeData.loadColors = locals.airlinkThemeItemPart[1].split(",")                    
+                else if locals.airlinkThemeItemPart[0] == "noBar" then
+                    locals.themeData.noBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "lowBar" then
+                    locals.themeData.lowBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "medBar" then
+                    locals.themeData.medBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "highBar" then
+                    locals.themeData.highBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "maxBar" then
+                    locals.themeData.maxBar = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "failColor" then
+                    locals.themeData.failColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "passColor" then
+                    locals.themeData.passColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "iti1" then
+                    locals.themeData.iti1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "iti2" then
+                    locals.themeData.iti2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "iti3" then
+                    locals.themeData.iti3 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "iti4" then
+                    locals.themeData.iti4 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "iti5" then
+                    locals.themeData.iti5 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "iti6" then
+                    locals.themeData.iti6 = locals.airlinkThemeItemPart[1]                                                                                                    
+                else if locals.airlinkThemeItemPart[0] == "poz" then
+                    locals.themeData.poz = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "poy" then
+                    locals.themeData.poy = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "pox" then
+                    locals.themeData.pox = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "pow" then
+                    locals.themeData.pow = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "pov" then
+                    locals.themeData.pov = locals.airlinkThemeItemPart[1]                                        
+                else if locals.airlinkThemeItemPart[0] == "tag1" then
+                    locals.themeData.tag1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag2" then
+                    locals.themeData.tag2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag1Color0" then
+                    locals.themeData.tag1Color0 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag2Color0" then
+                    locals.themeData.tag2Color0 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag2Color1" then
+                    locals.themeData.tag2Color1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "tag2Color2" then
+                    locals.themeData.tag2Color2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor0" then
+                    locals.themeData.signalColor0 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor1" then
+                    locals.themeData.signalColor1 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor2" then
+                    locals.themeData.signalColor2 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor3" then
+                    locals.themeData.signalColor3 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor4" then
+                    locals.themeData.signalColor4 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor5" then
+                    locals.themeData.signalColor5 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor6" then
+                    locals.themeData.signalColor6 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor7" then
+                    locals.themeData.signalColor7 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor8" then
+                    locals.themeData.signalColor8 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor9" then
+                    locals.themeData.signalColor9 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor10" then
+                    locals.themeData.signalColor10 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "signalColor11" then
+                    locals.themeData.signalColor11 = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "ipAddressColor" then
+                    locals.themeData.ipAddressColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "defaultTextColor" then
+                    locals.themeData.defaultTextColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "selectionHighlightColor" then
+                    locals.themeData.selectionHighlightColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter1Color" then
+                    locals.themeData.borderCharacter1Color = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter2Color" then
+                    locals.themeData.borderCharacter2Color = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "borderCharacter3Color" then
+                    locals.themeData.borderCharacter3Color = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "helpMenuItemColor" then
+                    locals.themeData.helpMenuItemColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "helpMenuKeyColor" then
+                    locals.themeData.helpMenuKeyColor = locals.airlinkThemeItemPart[1]
+                end if
+            end for
+            return locals.themeData
+        end function
+
+    //CUSTOM FUNCTIONS EXP
+        load_layer_0 = function(borderCharacter1, borderCharacter1Color, borderCharacter2, borderCharacter2Color, borderCharacter3, borderCharacter3Color, leftBorder, rightBorder)
+            ux_layer_0 = []
+            ux_layer_0.push((borderCharacter2*61).color(borderCharacter2Color).pos(leftBorder))
+            ux_layer_0.push((borderCharacter3*61).color(borderCharacter3Color).pos(leftBorder))
+            ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+            ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+            ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+            ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+            ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+            ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+            ux_layer_0.push((borderCharacter1*61).color(borderCharacter1Color).pos(leftBorder))
+            ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+            ux_layer_0.push(borderCharacter1.color(borderCharacter1Color).pos(leftBorder) + borderCharacter1.color(borderCharacter1Color).pos(rightBorder))
+            ux_layer_0.push((borderCharacter1*61).color(borderCharacter1Color).pos(leftBorder))
+            ux_layer_0.push(borderCharacter2.color(borderCharacter2Color).pos(leftBorder) + borderCharacter2.color(borderCharacter2Color).pos(rightBorder))
+            ux_layer_0.push((borderCharacter2*61).color(borderCharacter2Color).pos(leftBorder))
+            return ux_layer_0
+        end function
+
+        
