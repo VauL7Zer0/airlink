@@ -25,7 +25,10 @@
         end if
 		if userInput == "Home" then
 			myShell.launch("/usr/bin/Browser.exe", myRouter.public_ip + ":80")
-		end if        
+		end if
+		if userInput == "End" then
+			myShell.launch("/usr/bin/Browser.exe", myRouter.local_ip + ":8080")
+		end if		
 		if userInput == "Insert" then
             if showThemeList == true then                    
                 myShell.launch("/usr/bin/Notepad.exe", home_dir + "/Airlink/Theme/" + themeList[themeIndexSelection].name)
