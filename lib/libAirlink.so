@@ -1226,6 +1226,7 @@ end function
             "defaultTextColor": "",
             "progressBarIconA": "◙",
             "progressBarIconB": "◌",
+            "blackListTag": "ø",
             "selectionHighlightColor": "",
             "helpMenuItemColor": "",
             "helpMenuKeyColor": "",
@@ -1357,6 +1358,8 @@ end function
                     locals.themeData.progressBarIconA = locals.airlinkThemeItemPart[1]
                 else if locals.airlinkThemeItemPart[0] == "progressBarIconB" then
                     locals.themeData.progressBarIconB = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "blackListTag" then
+                    locals.themeData.blackListTag = locals.airlinkThemeItemPart[1]    
                 end if
             end for
             return locals.themeData
