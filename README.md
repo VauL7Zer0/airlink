@@ -47,11 +47,7 @@ Set up your directory paths and place the compiled binaries in their respective 
 
 ├── snow.ini
 
-├── anime.ini
-
-├── SpectralFlux.ini
-
-└── NebulaPulse.ini
+└── anime.ini
 ## Built With
 ### GreyScript Prime
 AirLink uses the GreyScript Prime library for extended scripting utilities, helper functions, and improved workflow capabilities within Grey Hack.
