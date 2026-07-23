@@ -256,15 +256,11 @@
                         ssidParts[5] = shadowPart[5]
                     end if
                     if onBlacklist == false then
-                        if shadowPart.hasIndex(5) == true then
-                            ux_layer_1[displayLineIndex] = (markerTag.pos(str(themeData.pow) + "em") + (signalBar).pos(str(themeData.pov) + "em") + (ssidParts[1]).pos(str(themeData.poz) + "em") + ssidParts[2].pos(str(themeData.poy) + "em") + ssidParts[5].pos(str(themeData.pox) + "em"))
-                        else                        
-                            ux_layer_1[displayLineIndex] = (markerTag.pos(str(themeData.pow) + "em") + (signalBar).pos(str(themeData.pov) + "em") + (ssidParts[1]).pos(str(themeData.poz) + "em") + ssidParts[2].pos(str(themeData.poy) + "em") + ssidParts[0].pos(str(themeData.pox) + "em"))
-                        end if
+                        ux_layer_1[displayLineIndex] = (markerTag.pos(str(themeData.pow) + "em") + (signalBar).pos(str(themeData.pov) + "em") + (ssidParts[1]).pos(str(themeData.poz) + "em") + ssidParts[2].pos(str(themeData.poy) + "em") + ssidParts[0].pos(str(themeData.pox) + "em"))
                     else if onBlacklist == true then
                         ux_layer_1[displayLineIndex] = (themeData.blackListTag.pos(str(themeData.pow) + "em") + (signalBar.strike).pos(str(themeData.pov) + "em") + (ssidParts[1].strike).pos(str(themeData.poz) + "em") + (ssidParts[2].strike).pos(str(themeData.poy) + "em") + (ssidParts[0].strike).pos(str(themeData.pox) + "em")).strike
                     end if
-                    shadowPart = []
+
                     onBlacklist = false
 
                     if hasInternet == true then
@@ -281,7 +277,7 @@
                         ux_layer_1[0] = ux_layer_1[displayLineIndex]
                         if shadowContent.len > 0 then
                             if not markerTag == themeData.tag1.color(themeData.tag2Color0) then
-                                ux_layer_1[12] = (ssidParts[2] + " password is " + ssidParts[3].bold.color(themeData.defaultTextColor)).pos("2em")
+                                ux_layer_1[12] = (ssidParts[2] + " password is " + shadowPart[3].bold.color(themeData.defaultTextColor)).pos("2em")
                             end if
                         end if
                     end if
