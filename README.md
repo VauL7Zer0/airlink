@@ -18,19 +18,37 @@ Set up your directory paths and place the compiled binaries in their respective 
 
 /opt/airlink/
 
-├── bin/airlink            # Main executable
+├── bin/airlink            
 
-├── lib/libAirlink.so      # Shared library dependency
+├── etc/airlink.conf       
 
-└── etc/airlink.conf       # Configuration file
+├── lib/libAirlink.so      
+
+├── lib/libGraphics.so     
+
+├── lib/libHelp.so         
+
+├── lib/libRam.so          
+
+├── lib/libTheme.so        
+
+└── lib/libUserInput.so    
 
 /home/{username}/Airlink/Theme/
 
-├── hacker.ini             # Theme presets
+├── hacker.ini             
 
-├── rust.ini
+├── cyberpunk.ini
 
-└── anime.ini
+├── professional.ini
+
+├── snow.ini
+
+├── anime.ini
+
+├── SpectralFlux.ini
+
+└── NebulaPulse.ini
 ## Built With
 ### GreyScript Prime
 AirLink uses the GreyScript Prime library for extended scripting utilities, helper functions, and improved workflow capabilities within Grey Hack.
