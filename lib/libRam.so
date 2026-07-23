@@ -1,0 +1,46 @@
+// Declare Variables
+    //System Calls
+	    myShell = get_shell
+	    myComputer = myShell.host_computer
+        isOnline = myComputer.is_network_active
+        if isOnline == true then
+            myRouter = get_router(myComputer.public_ip)
+            lastIP = myComputer.public_ip
+        else
+            lastIP = "0.0.0.0"
+        end if
+    //String Variables
+        lastPassword = ""
+        lastNetwork = ""
+        userInput = ""
+        playerDatabaseDir = ""
+        wifiDatabaseFilename = ""
+        airlinkConfigContent = ""
+    //Number Variables
+        scrollOffset = 0
+        themeScrollOffset = 0
+        windowSize = 6
+        themeIndexSelection = 0
+        //Navigation Menu Index (Selection)
+			wifiIndex = 0
+			interfaceSelection = 0        
+    //Boolean Variables
+        hopConnections = false
+        showHelp = false
+        showThemeList = false
+        hasInternet = myComputer.is_network_active
+    //List Variables
+        outputBuffer = []
+        themeList = [] 
+        airlinkConfigList = []
+        targetWifiParts = []
+        // UX Layer
+            ux_layer_0 = [] //Main Border
+            ux_layer_1 = [] //Labels / Deco
+            ux_layer_2 = [] //Info Text Display        
+    //Time Values
+        refreshTimer = time
+        lastHopTime = time
+    //Load Graphics Theme
+        loadShapes = [" ", "▂", "▄", "▅", "▆", "█"]
+        loadColors = ["WhiteSmoke", "Red", "Orange", "Yellow", "Green", "LimeGreen"]
