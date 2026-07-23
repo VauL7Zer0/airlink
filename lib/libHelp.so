@@ -1,0 +1,18 @@
+    if params.len > 0 then
+        if params[0].indexOf("-h") == 0 then
+            paramInfo = []
+            paramInfo.push("Toggle Help".color(themeData.helpMenuItemColor) + "        [F1]".color(themeData.helpMenuKeyColor))
+            paramInfo.push("Cycle Adaptor".color(themeData.helpMenuItemColor) + "      [TAB]".color(themeData.helpMenuKeyColor))
+            paramInfo.push("Exit the Program".color(themeData.helpMenuItemColor) + "   [ESC]".color(themeData.helpMenuKeyColor))
+            paramInfo.push("Scroll Up".color(themeData.helpMenuItemColor) + "          [UpArrow]".color(themeData.helpMenuKeyColor))
+            paramInfo.push("Scroll Down".color(themeData.helpMenuItemColor) + "        [DownArrow".color(themeData.helpMenuKeyColor))
+            paramInfo.push("Crack / Connect".color(themeData.helpMenuItemColor) + "    [RightArrow]".color(themeData.helpMenuKeyColor))
+            paramInfo.push("Open Password File".color(themeData.helpMenuItemColor) + " [Insert]".color(themeData.helpMenuKeyColor))
+            paramInfo.push("Toggle Theme Menu".color(themeData.helpMenuItemColor) + "  [F2]".color(themeData.helpMenuKeyColor))
+            for info in paramInfo
+                print(info,true)
+            end for
+            paramInfo = []
+        end if
+        exit
+    end if
