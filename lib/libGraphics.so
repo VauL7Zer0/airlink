@@ -1,0 +1,22 @@
+integer_to_image = function(floatNumber, imageList = null, colorList = null)
+if locals.colorList == null then locals.colorList = ["WhiteSmoke", "Red", "Orange", "Yellow", "Green", "LimeGreen"]
+if locals.imageList == null then locals.imageList = [" ", "▂", "▄", "▅", "▆", "█"]
+    floatNumber = str(floatNumber).remove(".")
+    floatParts = values(floatNumber)
+        for i in floatParts
+            if to_int(i) > 0 and to_int(i) <=2 then
+                floatParts[__i_idx] = locals.imageList[1].color(locals.colorList[5])
+            else if to_int(i) > 2 and to_int(i) <= 4 then
+                floatParts[__i_idx] = locals.imageList[2].color(locals.colorList[4])
+            else if to_int(i) > 4 and to_int(i) <= 6 then
+                floatParts[__i_idx] = locals.imageList[3].color(locals.colorList[3])
+            else if to_int(i) > 6 and to_int(i) <= 8 then
+                floatParts[__i_idx] = locals.imageList[4].color(locals.colorList[2])
+            else if to_int(i) == 0 then
+                floatParts[__i_idx] = locals.imageList[0].color(locals.colorList[0])
+            else
+                floatParts[__i_idx] = locals.imageList[4].color(locals.colorList[1])
+            end if
+        end for
+    return floatParts.join("")
+end function   
