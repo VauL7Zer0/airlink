@@ -253,7 +253,7 @@
                     if onBlacklist == false then
                         ux_layer_1[displayLineIndex] = (markerTag.pos(str(themeData.pow) + "em") + (signalBar).pos(str(themeData.pov) + "em") + (ssidParts[1]).pos(str(themeData.poz) + "em") + ssidParts[2].pos(str(themeData.poy) + "em") + ssidParts[0].pos(str(themeData.pox) + "em"))
                     else if onBlacklist == true then
-                        ux_layer_1[displayLineIndex] = (blackListTag.pos(str(themeData.pow) + "em") + (signalBar.strike).pos(str(themeData.pov) + "em") + (ssidParts[1].strike).pos(str(themeData.poz) + "em") + (ssidParts[2].strike).pos(str(themeData.poy) + "em") + (ssidParts[0].strike).pos(str(themeData.pox) + "em"))
+                        ux_layer_1[displayLineIndex] = (blackListTag.pos(str(themeData.pow) + "em") + (signalBar.strike).pos(str(themeData.pov) + "em") + (ssidParts[1].strike).pos(str(themeData.poz) + "em") + (ssidParts[2].strike).pos(str(themeData.poy) + "em") + (ssidParts[0].strike).pos(str(themeData.pox) + "em")).strike
                     end if
                     onBlacklist = false
 
