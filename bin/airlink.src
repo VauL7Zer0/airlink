@@ -9,7 +9,7 @@
         import_code("/opt/airlink/lib/libHelp.so")
     // Load Graphics
         import_code("/opt/airlink/lib/libGraphics.so")
-        blackListTag = "X"
+        blackListTag = "ø"
     // Specify Wifi Information Database File Location
             // Load config file data
                 airlinkConfigFile = myComputer.File("/opt/airlink/etc/airlink.conf")
@@ -195,11 +195,6 @@
                 if to_int(ssidParts[1].remove("%")) == 100 then
                     signalBar = themeData.maxBar.color(themeData.signalColor11)
                 end if
-                if ssidParts.hasIndex(4) then
-                    if ssidParts[4].trim == "blacklist" then
-                        onBlacklist = true
-                    end if
-                end if
                 if hasInternet == true then
                     if typeof(myRouter) == "router" then
                         if myRouter.bssid_name == ssidParts[0] then ssidParts[0] = myRouter.public_ip.color(themeData.ipAddressColor).bold
@@ -223,6 +218,13 @@
                             end if
                         end if
                     end for
+
+                if shadowPart.hasIndex(4) then
+                    if shadowPart[4].trim == "blacklist" then
+                        onBlacklist = true
+                    end if
+                end if
+
                     // Check for internet
                     if myComputer.is_network_active == true then
                         //Check if ip has chagned
@@ -289,7 +291,7 @@
         //themeData.loadShapes = [" ", "▂", "▄", "▅", "▆", "█"]
         //themeData.loadColors = ["WhiteSmoke", "Red", "Orange", "Yellow", "Green", "LimeGreen"]
         ux_layer_1[12] = ("Active: " + str(round(time)).bold.color(themeData.defaultTextColor)).pos("1em") + 
-            (("Refresh: <size=60%>" + "◙" * ceil((timeLeft)/10))).pos("11em").color("LightBlue") + "</size>" + str(timeLeft).color(themeData.ipAddressColor).pos("9em") + ("<size=75%>" + integer_to_image(time - loopTime, themeData.loadShapes, themeData.loadColors) + "</size>").pos("32em")            
+            (("Refresh: <size=60%>" + themeData.progressBarIconA * ceil((timeLeft)/10))).pos("11em").color("LightBlue") + "</size>" + str(timeLeft).color(themeData.ipAddressColor).pos("9em") + ("<size=75%>" + integer_to_image(time - loopTime, themeData.loadShapes, themeData.loadColors) + "</size>").pos("32em")            
         //    end if
         //end if
 
@@ -379,4 +381,4 @@
             knownPass = "unknown"
             end while
 
-            //test = "*⁑⁂⁇□■◀▲△▴▵◆○◌●◘◙◦"
+            //test = "*⁑⁂⁇□■◀▲△▴▵◆○◙◌◙●◘◙◦"
