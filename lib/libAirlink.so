@@ -1224,6 +1224,8 @@ end function
             "signalColor11": "",
             "ipAddressColor": "",
             "defaultTextColor": "",
+            "progressBarIconA": "◙",
+            "progressBarIconB": "◌",
             "selectionHighlightColor": "",
             "helpMenuItemColor": "",
             "helpMenuKeyColor": "",
@@ -1350,7 +1352,11 @@ end function
                 else if locals.airlinkThemeItemPart[0] == "helpMenuKeyColor" then
                     locals.themeData.helpMenuKeyColor = locals.airlinkThemeItemPart[1]
                 else if locals.airlinkThemeItemPart[0] == "ackInfoColor" then
-                    locals.themeData.ackInfoColor = locals.airlinkThemeItemPart[1]                    
+                    locals.themeData.ackInfoColor = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "progressBarIconA" then
+                    locals.themeData.progressBarIconA = locals.airlinkThemeItemPart[1]
+                else if locals.airlinkThemeItemPart[0] == "progressBarIconB" then
+                    locals.themeData.progressBarIconB = locals.airlinkThemeItemPart[1]
                 end if
             end for
             return locals.themeData
