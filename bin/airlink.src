@@ -97,7 +97,7 @@
                 isOnline = "True".color(themeData.passColor)
             end if    
         //Set UX Display Line
-            ux_layer1 = ux_layer1 + ("Online: " + isOnline).pos("13em") + (network_device_list[interfaceSelection][0] + " " + network_device_list[interfaceSelection][1] + " " + network_device_list[interfaceSelection][2]).pos("23em")
+            ux_layer1 = ux_layer1 + ("Online:" + isOnline).pos("13em") + (network_device_list[interfaceSelection][0] + " " + network_device_list[interfaceSelection][1] + " " + network_device_list[interfaceSelection][2]).pos("23em")
             ux_layer_1[13] = (ux_layer1)        
         //Refresh network broadcasts every 5 minutes
             if refreshTimer >= (time - 300) then
@@ -297,7 +297,7 @@
         //themeData.loadShapes = [" ", "▂", "▄", "▅", "▆", "█"]
         //themeData.loadColors = ["WhiteSmoke", "Red", "Orange", "Yellow", "Green", "LimeGreen"]
         ux_layer_1[12] = ("Active: " + str(round(time)).bold.color(themeData.defaultTextColor)).pos("1em") + 
-            (("Refresh: <size=60%>" + themeData.progressBarIconA * ceil((timeLeft)/10))).pos("11em").color("LightBlue") + "</size>" + str(timeLeft).color(themeData.ipAddressColor).pos("9em") + ("<size=75%>" + integer_to_image(time - loopTime, themeData.loadShapes, themeData.loadColors) + "</size>").pos("32em")            
+            (("Refresh: <size=60%>" + (themeData.progressBarIconA * ceil((timeLeft)/10)))).pos("11em").color("LightBlue") + "</size>" + str(timeLeft).color(themeData.ipAddressColor).pos("9em") + ("<size=75%>" + integer_to_image(time - loopTime, themeData.loadShapes, themeData.loadColors) + "</size>").pos("32em")            
         //    end if
         //end if
 
@@ -356,9 +356,9 @@
                                     myComputer.File(current_path + "/" + "file.cap").delete
                                     lastNetwork = targetWifiParts[2]
                                     if shadowContent then
-                                        shadowFile.set_content(shadowContent + char(10) + targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword)
+                                        shadowFile.set_content(shadowContent + char(10) + targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword + " whitelist " + myRouter.public_ip)
                                     else
-                                        shadowFile.set_content(targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword)
+                                        shadowFile.set_content(targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword + " whitelist " + myRouter.public_ip)
                                     end if
                                 else
                                     ux_layer_1[12] = ("Unable to start monitor mode".bold.color(themeData.failColor).pos("1em"))	
