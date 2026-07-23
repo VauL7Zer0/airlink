@@ -3,8 +3,11 @@
 ### :sparkles: Features
 * **Zero Typing:** Navigate menus seamlessly using arrow keys and function keys.
 * **Password Vault:** Store and manage cracked Wi-Fi passwords locally.
+* **Auto Crack All:** Crack all broadcasts with a single key press.
+* **Blacklist:** Mark burned WiFi connections.
 * **Custom Themes:** Personalize your terminal appearance.
 * **Network Insights & WHOIS:** Display router details, contact/domain info, and WHOIS data for connected networks.
+* **More Router Information:** Display number of connected devices, open ports, and firewall status, of current connection.
 * **Live Telemetry:** Real-time status monitors for cryptoLib, active connections, re-scan timers, and interface states.
 * **Quick Access:** Open configuration files instantly with hotkeys.
 * **Size Defaulted:** Configured to fit inside the default terminal window scale
