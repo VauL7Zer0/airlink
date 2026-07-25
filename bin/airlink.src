@@ -10,7 +10,12 @@
     // Load Graphics
         import_code("/opt/airlink/lib/libGraphics.so")
         //blackListTag = "ø"
-    // Specify Wifi Information Database File Location
+    // Load Program Configuration
+            alConfig = {"classID":"airlinkConfig",
+                "playerDatabaseDir": home_dir + "/Airlink/Database",
+                "wifiDatabaseFilename":"wifiConnectionInfo.db",
+                "defaultTheme":"professional.ini"
+                }
             // Load config file data
                 airlinkConfigFile = myComputer.File("/opt/airlink/etc/airlink.conf")
             //Check if file loaded
@@ -18,17 +23,16 @@
                     airlinkConfigContent = airlinkConfigFile.get_content
                     if typeof(airlinkConfigContent) == "string" then
                         airlinkConfigList = airlinkConfigContent.split(char(10))
-                    end if                    
+                    end if
+                    for airlinkConfigItem in airlinkConfigList
+						configData = airlinkConfigItem.split(":")
+						configIndex = configData[0].trim
+						configValue = configData[1].trim
+                        if alConfig.hasIndex(configIndex) then
+                            alConfig[configIndex] = configValue
+                        end if
+                    end for
                 end if
-    // Load Program Configuration
-        for airlinkConfigItem in airlinkConfigList
-            airlinkConfigItemPart = airlinkConfigItem.split(":")
-            if airlinkConfigItemPart[0] == "playerDatabaseDir" then
-                playerDatabaseDir = home_dir + airlinkConfigItemPart[1]
-            else if airlinkConfigItemPart[0] == "wifiDatabaseFileName" then
-                wifiDatabaseFilename = airlinkConfigItemPart[1]
-            end if
-        end for
     // Check Database Location Variables (Fallback to defaults)
         if playerDatabaseDir == "" then playerDatabaseDir = home_dir + "/Airlink/Database"
         if wifiDatabaseFilename == "" then wifiDatabaseFilename = "wifiConnectionInfo.db"
@@ -249,12 +253,6 @@
                 end if
                 // Display the visible items
                     displayLineIndex = (ssid - scrollOffset) + 2
-                    if shadowPart.hasIndex(5) then
-                        while not ssidParts.hasIndex(5)
-                            ssidParts.push("")
-                        end while
-                        ssidParts[5] = shadowPart[5]
-                    end if
                     if onBlacklist == false then
                         ux_layer_1[displayLineIndex] = (markerTag.pos(str(themeData.pow) + "em") + (signalBar).pos(str(themeData.pov) + "em") + (ssidParts[1]).pos(str(themeData.poz) + "em") + ssidParts[2].pos(str(themeData.poy) + "em") + ssidParts[0].pos(str(themeData.pox) + "em"))
                     else if onBlacklist == true then
@@ -310,7 +308,7 @@
         //Push layer zero data to ux
             for line in ux_layer_0
                 if ux_layer_1.hasIndex(__line_idx) then
-                    if wifiIndex + 2 == __line_idx and __line_idx <= 11 then
+                    if wifiIndex + 2 == __line_idx and __line_idx <= windowSize then
                         if showHelp == true or showThemeList == true or network_device_list[interfaceSelection][0].indexOf("eth") != null then
                             outputBuffer.push(line + (ux_layer_1[__line_idx]))
                         //else if not showThemeList == true then
@@ -362,9 +360,9 @@
                                     myComputer.File(current_path + "/" + "file.cap").delete
                                     lastNetwork = targetWifiParts[2]
                                     if shadowContent then
-                                        shadowFile.set_content(shadowContent + char(10) + targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword + " whitelist " + myRouter.public_ip)
+                                        shadowFile.set_content(shadowContent + char(10) + targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword + " whitelist ")
                                     else
-                                        shadowFile.set_content(targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword + " whitelist " + myRouter.public_ip)
+                                        shadowFile.set_content(targetWifiParts[0] + " " + targetWifiParts[1] + " " + targetWifiParts[2] + " " + lastPassword + " whitelist ")
                                     end if
                                 else
                                     ux_layer_1[12] = ("Unable to start monitor mode".bold.color(themeData.failColor).pos("1em"))	
