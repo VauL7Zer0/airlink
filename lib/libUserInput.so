@@ -61,6 +61,7 @@
 		end if
 
         if userInput == "F3" then
+        clear_screen
             sortedBroadcasts = []
             for broadcast in getBroadcasts
                 parts = broadcast.split(" ")
@@ -85,7 +86,6 @@
                 end if
                 // Crack if not in database
                 if not hasEntry then
-					clear_screen
 					reqAcks = get_acks(signal.signalStrength)
 					if autoCrackLog.len > 0 then
 						for autolog in autoCrackLog
