@@ -1,4 +1,4 @@
-# :signal_strength: Airlink
+# :signal_strength: Airlink UX
 > A terminal-based UX designed for cracking detected Wi-Fi broadcasts.
 ### :sparkles: Features
 * **Zero Typing:** Navigate menus seamlessly using arrow keys and function keys.
