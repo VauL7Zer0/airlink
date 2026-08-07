@@ -3,7 +3,7 @@
 ## ℹ️ <u>Known Data Vulnerabilities</u>
 * 🚨 Passwords are stored as plain text
 * ⚠️ All network information is stored as plain text
-* ⚠️ Theme files are plain text and could be easily modified by a malicious party
+* ⚠️ Theme files are plain text, easily modified by a malicious party
 * 🔺 airlink.conf file is plain text and vulnerable to tampering
 
 ## 🛡️ <u>Security Features</u> 🗝️
