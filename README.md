@@ -1,3 +1,6 @@
+<img width="400" height="254" alt="Airlink Alpha 4 Custom Themes Preview" src="https://github.com/user-attachments/assets/a6d114d4-05ae-4633-8752-9e971c940212" />
+
+
 # :signal_strength: Airlink UX
 > A terminal-based UX designed for cracking detected Wi-Fi broadcasts.
 ### :sparkles: Features
