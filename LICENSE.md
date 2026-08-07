@@ -1,4 +1,4 @@
-# 📜 <u>Airlink Software License Agreement</u>
+# 📜 <u>Airlink UX License Agreement</u>
 ---
 
 ## ℹ️ <u>License Class: MIT</u>
