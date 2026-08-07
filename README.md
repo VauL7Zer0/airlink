@@ -1,6 +1,5 @@
 <img width="400" height="254" alt="Airlink Alpha 4 Custom Themes Preview" src="https://github.com/user-attachments/assets/a6d114d4-05ae-4633-8752-9e971c940212" />
 
-
 # :signal_strength: Airlink UX
 > A terminal-based UX designed for cracking detected Wi-Fi broadcasts.
 ### :sparkles: Features
@@ -15,8 +14,11 @@
 * **Quick Access:** Open configuration files instantly with hotkeys.
 * **Size Defaulted:** Configured to fit inside the default terminal window scale
 ### :link: Links & Resources
+
 * **GitHub Repository:** [VauL7Zer0/airlink](https://github.com/VauL7Zer0/airlink)
 * **Installation Video:** [YouTube Tutorial](https://youtu.be/5Ibom81Zdms)
+
+<img width="400" height="128" alt="Airlink Alpha 4 2 " src="https://github.com/user-attachments/assets/249c1fa3-349a-48f0-a404-c1f5819a9998" />
 
 ## 🔨: Installation Guide
 ### Step 1: Directory Structure & Binaries
@@ -57,6 +59,7 @@ AirLink uses the GreyScript Prime library for extended scripting utilities, help
 GitHub: https://github.com/Svarii/greyscript-prime
 
 ## Screenshots
+
 <img width="50%" height="50%" alt="Screenshot 2026-07-22 223137" src="https://github.com/user-attachments/assets/75972e40-1c5f-47b6-9b52-535ab7636740" /><img width="50%" height="50%" alt="Screenshot 2026-07-22 223127" src="https://github.com/user-attachments/assets/ca3a036d-0b1f-4311-a0f0-41f3480a6d93" />
 <img width="50%" height="50%" alt="Screenshot 2026-07-22 223110" src="https://github.com/user-attachments/assets/0b703070-b4d8-4f73-867c-758170efb426" /><img width="50%" height="50%" alt="Screenshot 2026-07-22 223101" src="https://github.com/user-attachments/assets/9abb6a5c-aab9-44f8-b019-4e91cc4311d9" />
 <img width="50%" height="50%" alt="Screenshot 2026-07-22 223050" src="https://github.com/user-attachments/assets/96c6f1ef-a986-4d29-8508-1a82971ace99" /><img width="50%" height="50%" alt="Screenshot 2026-07-22 223034" src="https://github.com/user-attachments/assets/03da4ca4-c8d4-4feb-b3ec-03feaa11d5af" />
