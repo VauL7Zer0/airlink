@@ -1,4 +1,10 @@
-# MIT License
+# 📜 <u>Airlink Software License Agreement</u>
+---
+
+## ℹ️ <u>License Class: MIT</u>
+
+```text
+MIT License
 
 Copyright (c) 2026 Svarii / VauL7 Zer0
 
@@ -19,3 +25,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
+
+---
+
+## 🪲 Liability Clause 🦠
+* 📢 Facing a code error or standard game crash?
+* 💀 The authors are not responsible for lost local data.
+* 📟 Your software execution states are entirely your own responsibility.
+* 🤫 Use at your own discretion. Watch for updates.
