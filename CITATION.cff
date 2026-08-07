@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "Software configuration reference for the Airlink UX node."
+authors:
+  - name: "Svarii"
+title: "Airlink UX"
+date-released: 2026-07-19
+url: "https://github.com/VauL7Zer0/airlink"
